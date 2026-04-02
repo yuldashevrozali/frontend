@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import API from '../api/client';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 type FormValues = {
   name: string; surname: string; phone: string; region: string; district: string;
@@ -10,6 +10,8 @@ type FormValues = {
 export default function Register() {
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
   const navigate = useNavigate();
+  const [registered, setRegistered] = useState(false);
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
     window.Telegram?.WebApp?.BackButton.show();
@@ -18,12 +20,37 @@ export default function Register() {
 
   const onSubmit = async (data: FormValues) => {
     try {
-      await API.post('/auth/register', data);
-      window.location.href = '/'; // Yoki state update
+      const res = await API.post('/auth/register', data);
+      setUserName(res.data.user?.name || data.name);
+      setRegistered(true);
+
+      // Botga ma'lumot yuborish (Web App orqali)
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.sendData(JSON.stringify({
+          action: 'registered',
+          name: res.data.user?.name || data.name
+        }));
+      }
     } catch (e) {
       alert("Xatolik: " + (e as any).response?.data?.error);
     }
   };
+
+  if (registered) {
+    return (
+      <div className="p-4 max-w-md mx-auto text-center">
+        <div className="text-6xl mb-4">🎉</div>
+        <h2 className="text-2xl font-bold mb-2">Xush kelibsiz, {userName}!</h2>
+        <p className="text-gray-500 mb-6">Siz muvaffaqiyatli ro'yxatdan o'tdingiz.</p>
+        <button
+          onClick={() => navigate('/')}
+          className="w-full bg-blue-500 text-white p-3 rounded-lg font-semibold hover:bg-blue-600"
+        >
+          🏠 Bosh sahifaga o'tish
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 max-w-md mx-auto">
