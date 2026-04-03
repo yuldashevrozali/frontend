@@ -5,7 +5,6 @@ import API from '../api/client';
 export default function Home() {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
-  const [tests, setTests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -14,8 +13,6 @@ export default function Home() {
         const res = await API.get('/me');
         setUser(res.data);
       } catch (err) {
-        console.error(err);
-        // Agar user ro'yxatdan o'tmagan bo'lsa, register sahifasiga yo'naltirish
         navigate('/register');
       } finally {
         setLoading(false);
@@ -24,43 +21,36 @@ export default function Home() {
     fetchUser();
   }, [navigate]);
 
-  useEffect(() => {
-    const fetchTests = async () => {
-      try {
-        const res = await API.get('/tests');
-        setTests(res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchTests();
-  }, []);
-
   if (loading) {
     return <div className="p-4 text-center">Yuklanmoqda...</div>;
   }
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">🏠 Bosh sahifa</h1>
-      {user && (
-        <div className="mb-4 p-3 bg-green-100 rounded-lg">
-          <p className="text-lg">👋 Xush kelibsiz, <strong>{user.name}</strong>!</p>
-        </div>
-      )}
-      <h2 className="text-xl font-semibold mb-2">📚 Mavjud testlar</h2>
-      <div className="space-y-2">
-        {tests.length === 0 && <p className="text-gray-500">Hozircha testlar mavjud emas.</p>}
-        {tests.map((test) => (
-          <div
-            key={test.id}
-            className="p-4 bg-white rounded shadow cursor-pointer hover:bg-gray-50"
-            onClick={() => navigate(`/test/${test.id}`)}
-          >
-            <h2 className="font-semibold">{test.title}</h2>
-            <p className="text-sm text-gray-500">{test.description}</p>
-          </div>
-        ))}
+      <h1 className="text-2xl font-bold mb-2">👋 Xush kelibsiz, {user?.name}!</h1>
+      <p className="text-gray-500 mb-6">Menularni tanlang:</p>
+
+      <div className="space-y-3">
+        <button
+          onClick={() => navigate('/create-test')}
+          className="w-full p-4 bg-green-500 text-white rounded-lg font-semibold text-lg hover:bg-green-600 transition"
+        >
+          📝 Test Yaratish
+        </button>
+
+        <button
+          onClick={() => navigate('/take-test')}
+          className="w-full p-4 bg-blue-500 text-white rounded-lg font-semibold text-lg hover:bg-blue-600 transition"
+        >
+          📋 Test Ishlash
+        </button>
+
+        <button
+          onClick={() => navigate('/profile')}
+          className="w-full p-4 bg-purple-500 text-white rounded-lg font-semibold text-lg hover:bg-purple-600 transition"
+        >
+          👤 Profil
+        </button>
       </div>
     </div>
   );
