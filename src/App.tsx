@@ -12,7 +12,10 @@ function Layout({ children }: { children: React.ReactNode }) {
   const showNav = location.pathname !== '/register';
 
   return (
-    <div className="min-h-screen pb-24">
+    <div style={{
+      minHeight: '100vh',
+      paddingBottom: showNav ? '100px' : '0',
+    }}>
       {children}
       {showNav && <BottomNav />}
     </div>

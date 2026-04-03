@@ -10,7 +10,10 @@ import BottomNav from './components/BottomNav';
 function Layout({ children }) {
     const location = useLocation();
     const showNav = location.pathname !== '/register';
-    return (_jsxs("div", { className: "min-h-screen pb-24", children: [children, showNav && _jsx(BottomNav, {})] }));
+    return (_jsxs("div", { style: {
+            minHeight: '100vh',
+            paddingBottom: showNav ? '100px' : '0',
+        }, children: [children, showNav && _jsx(BottomNav, {})] }));
 }
 export default function App() {
     useEffect(() => {
