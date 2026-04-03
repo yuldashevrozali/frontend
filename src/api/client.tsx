@@ -11,8 +11,11 @@ const API = axios.create({ baseURL: API_URL });
 
 API.interceptors.request.use((config) => {
   // Web App initData ni header ga qo'shamiz
-  if (window.Telegram?.WebApp?.initData) {
-    config.headers['x-tg-auth'] = window.Telegram.WebApp.initData;
+  const initData = window.Telegram?.WebApp?.initData;
+  if (initData) {
+    config.headers['x-tg-auth'] = initData;
+  } else {
+    console.warn('⚠️ Telegram initData topilmadi!');
   }
   return config;
 });
