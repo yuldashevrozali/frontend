@@ -2,6 +2,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/client';
+import MathKeyboard from '../components/MathKeyboard';
 const OPTIONS_4 = ['A', 'B', 'C', 'D'];
 const OPTIONS_6 = ['A', 'B', 'C', 'D', 'E', 'F'];
 export default function CreateTest() {
@@ -9,8 +10,28 @@ export default function CreateTest() {
     const [answerKeys, setAnswerKeys] = useState({});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [showKeyboard, setShowKeyboard] = useState(false);
+    const [activeInput, setActiveInput] = useState(null);
     const setAnswer = (key, value) => {
         setAnswerKeys(prev => ({ ...prev, [key]: value }));
+    };
+    const handleKeyboardInput = (value) => {
+        if (!activeInput)
+            return;
+        if (value === 'backspace') {
+            setAnswerKeys(prev => ({ ...prev, [activeInput]: (prev[activeInput] || '').slice(0, -1) }));
+        }
+        else if (value === 'enter') {
+            setShowKeyboard(false);
+            setActiveInput(null);
+        }
+        else {
+            setAnswerKeys(prev => ({ ...prev, [activeInput]: (prev[activeInput] || '') + value }));
+        }
+    };
+    const openKeyboard = (key) => {
+        setActiveInput(key);
+        setShowKeyboard(true);
     };
     const requiredKeys = Array.from({ length: 35 }, (_, i) => String(i + 1));
     const allRequiredFilled = requiredKeys.every(k => answerKeys[k]);
@@ -146,7 +167,7 @@ export default function CreateTest() {
                     backdropFilter: 'blur(20px)',
                     borderRadius: '20px',
                     padding: '20px',
-                    marginBottom: '20px',
+                    marginBottom: showKeyboard ? '320px' : '20px',
                     border: '1px solid rgba(255,255,255,0.12)',
                 }, children: [_jsxs("h3", { style: { fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }, children: [_jsx("span", { style: {
                                     width: '36px', height: '36px',
@@ -161,29 +182,31 @@ export default function CreateTest() {
                                 background: 'rgba(255,255,255,0.08)',
                                 borderRadius: '14px',
                                 padding: '12px',
-                            }, children: [_jsx("span", { style: { opacity: 0.6, width: '40px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }, children: q }), _jsxs("div", { style: { display: 'flex', gap: '12px', flex: 1 }, children: [_jsx("input", { type: "text", placeholder: ".1", value: answerKeys[`${q}.1`] || '', onChange: e => setAnswer(`${q}.1`, e.target.value.toUpperCase()), style: {
+                            }, children: [_jsx("span", { style: { opacity: 0.6, width: '40px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }, children: q }), _jsxs("div", { style: { display: 'flex', gap: '12px', flex: 1 }, children: [_jsx("button", { onClick: () => openKeyboard(`${q}.1`), style: {
                                                 flex: 1,
                                                 padding: '14px',
-                                                background: 'rgba(255,255,255,0.15)',
+                                                background: activeInput === `${q}.1` ? 'rgba(249,115,22,0.3)' : 'rgba(255,255,255,0.15)',
                                                 borderRadius: '12px',
                                                 color: 'white',
                                                 textAlign: 'center',
                                                 fontWeight: 'bold',
                                                 fontSize: '18px',
-                                                border: '2px solid transparent',
-                                                outline: 'none',
-                                            }, maxLength: 1 }), _jsx("input", { type: "text", placeholder: ".2", value: answerKeys[`${q}.2`] || '', onChange: e => setAnswer(`${q}.2`, e.target.value.toUpperCase()), style: {
+                                                border: activeInput === `${q}.1` ? '2px solid #f97316' : '2px solid transparent',
+                                                cursor: 'pointer',
+                                                minHeight: '52px',
+                                            }, children: answerKeys[`${q}.1`] || _jsx("span", { style: { opacity: 0.4 }, children: ".1" }) }), _jsx("button", { onClick: () => openKeyboard(`${q}.2`), style: {
                                                 flex: 1,
                                                 padding: '14px',
-                                                background: 'rgba(255,255,255,0.15)',
+                                                background: activeInput === `${q}.2` ? 'rgba(249,115,22,0.3)' : 'rgba(255,255,255,0.15)',
                                                 borderRadius: '12px',
                                                 color: 'white',
                                                 textAlign: 'center',
                                                 fontWeight: 'bold',
                                                 fontSize: '18px',
-                                                border: '2px solid transparent',
-                                                outline: 'none',
-                                            }, maxLength: 1 })] })] }, q))) })] }), _jsx("button", { onClick: handleSubmit, disabled: loading || !allRequiredFilled, style: {
+                                                border: activeInput === `${q}.2` ? '2px solid #f97316' : '2px solid transparent',
+                                                cursor: 'pointer',
+                                                minHeight: '52px',
+                                            }, children: answerKeys[`${q}.2`] || _jsx("span", { style: { opacity: 0.4 }, children: ".2" }) })] })] }, q))) })] }), showKeyboard && (_jsx(MathKeyboard, { onInput: handleKeyboardInput, onClose: () => { setShowKeyboard(false); setActiveInput(null); } })), _jsx("button", { onClick: handleSubmit, disabled: loading || !allRequiredFilled, style: {
                     width: '100%',
                     padding: '18px',
                     background: 'linear-gradient(135deg, #10b981, #059669)',
