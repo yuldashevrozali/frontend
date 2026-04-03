@@ -23,58 +23,103 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white/80">Yuklanmoqda...</p>
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            width: '64px', height: '64px',
+            border: '4px solid rgba(255,255,255,0.2)',
+            borderTopColor: 'white',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 16px',
+          }}></div>
+          <p style={{ opacity: 0.8 }}>Yuklanmoqda...</p>
         </div>
       </div>
     );
   }
 
   const menuItems = [
-    { icon: '📝', title: 'Test Yaratish', desc: 'Yangi test yarating', color: 'from-green-400 to-emerald-600', path: '/create-test' },
-    { icon: '📋', title: 'Test Ishlash', desc: 'Test kodini kiriting', color: 'from-blue-400 to-indigo-600', path: '/take-test' },
-    { icon: '👤', title: 'Profil', desc: 'Natijalaringiz', color: 'from-purple-400 to-pink-600', path: '/profile' },
+    { icon: '📝', title: 'Test Yaratish', desc: 'Yangi test yarating', gradient: 'linear-gradient(135deg, #10b981, #059669)', path: '/create-test' },
+    { icon: '📋', title: 'Test Ishlash', desc: 'Test kodini kiriting', gradient: 'linear-gradient(135deg, #3b82f6, #6366f1)', path: '/take-test' },
+    { icon: '👤', title: 'Profil', desc: 'Natijalaringiz', gradient: 'linear-gradient(135deg, #a855f7, #ec4899)', path: '/profile' },
   ];
 
   return (
-    <div className="min-h-screen p-4">
+    <div style={{ padding: '16px', paddingBottom: '120px' }}>
       {/* Header */}
-      <div className="glass rounded-3xl p-6 mb-6">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
-            <span className="text-2xl">👋</span>
+      <div style={{
+        background: 'rgba(255,255,255,0.08)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '24px',
+        padding: '24px',
+        marginBottom: '24px',
+        border: '1px solid rgba(255,255,255,0.12)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{
+            width: '64px', height: '64px',
+            background: 'linear-gradient(135deg, #667eea, #764ba2)',
+            borderRadius: '18px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '32px',
+          }}>
+            👋
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white">Xush kelibsiz!</h1>
-            <p className="text-white/70">{user?.name} {user?.surname}</p>
+            <h1 style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '4px' }}>Xush kelibsiz!</h1>
+            <p style={{ opacity: 0.7, fontSize: '16px' }}>{user?.name} {user?.surname}</p>
           </div>
         </div>
       </div>
 
       {/* Menu */}
-      <div className="space-y-4">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {menuItems.map((item) => (
           <button
             key={item.path}
             onClick={() => navigate(item.path)}
-            className="w-full glass rounded-2xl p-4 btn-hover text-left"
+            style={{
+              width: '100%',
+              background: 'rgba(255,255,255,0.08)',
+              backdropFilter: 'blur(20px)',
+              borderRadius: '20px',
+              padding: '20px',
+              border: '1px solid rgba(255,255,255,0.12)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '16px',
+              transition: 'all 0.3s ease',
+              textAlign: 'left',
+            }}
           >
-            <div className="flex items-center gap-4">
-              <div className={`w-14 h-14 bg-gradient-to-br ${item.color} rounded-2xl flex items-center justify-center`}>
-                <span className="text-2xl">{item.icon}</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-white">{item.title}</h3>
-                <p className="text-white/60 text-sm">{item.desc}</p>
-              </div>
-              <div className="ml-auto">
-                <svg className="w-6 h-6 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
+            <div style={{
+              width: '56px', height: '56px',
+              background: item.gradient,
+              borderRadius: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '28px',
+              flexShrink: 0,
+            }}>
+              {item.icon}
             </div>
+            <div style={{ flex: 1 }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '4px', color: 'white' }}>
+                {item.title}
+              </h3>
+              <p style={{ fontSize: '14px', opacity: 0.6, color: 'white' }}>{item.desc}</p>
+            </div>
+            <svg style={{ width: '24px', height: '24px', opacity: 0.4, color: 'white' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
           </button>
         ))}
       </div>

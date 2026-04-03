@@ -27,11 +27,92 @@ export default function Profile() {
         fetchData();
     }, [navigate]);
     if (loading) {
-        return (_jsx("div", { className: "min-h-screen flex items-center justify-center", children: _jsxs("div", { className: "text-center", children: [_jsx("div", { className: "w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" }), _jsx("p", { className: "text-white/80", children: "Yuklanmoqda..." })] }) }));
+        return (_jsx("div", { style: {
+                minHeight: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }, children: _jsxs("div", { style: { textAlign: 'center' }, children: [_jsx("div", { style: {
+                            width: '64px', height: '64px',
+                            border: '4px solid rgba(255,255,255,0.2)',
+                            borderTopColor: 'white',
+                            borderRadius: '50%',
+                            animation: 'spin 1s linear infinite',
+                            margin: '0 auto 16px',
+                        } }), _jsx("p", { style: { opacity: 0.8 }, children: "Yuklanmoqda..." })] }) }));
     }
-    return (_jsxs("div", { className: "min-h-screen p-4", children: [_jsxs("div", { className: "glass rounded-3xl p-6 mb-6", children: [_jsxs("div", { className: "flex items-center gap-4 mb-4", children: [_jsx("div", { className: "w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-600 rounded-2xl flex items-center justify-center", children: _jsx("span", { className: "text-3xl", children: "\uD83D\uDC64" }) }), _jsxs("div", { children: [_jsxs("h2", { className: "text-xl font-bold text-white", children: [user?.name, " ", user?.surname] }), _jsx("p", { className: "text-white/60", children: user?.phone })] })] }), _jsxs("div", { className: "grid grid-cols-2 gap-3", children: [_jsxs("div", { className: "bg-white/10 rounded-xl p-3", children: [_jsx("p", { className: "text-white/60 text-xs", children: "\uD83D\uDCCD Viloyat" }), _jsx("p", { className: "text-white font-semibold", children: user?.region })] }), _jsxs("div", { className: "bg-white/10 rounded-xl p-3", children: [_jsx("p", { className: "text-white/60 text-xs", children: "\uD83C\uDFD8\uFE0F Tuman" }), _jsx("p", { className: "text-white font-semibold", children: user?.district })] })] })] }), _jsxs("div", { className: "grid grid-cols-3 gap-3 mb-6", children: [_jsxs("div", { className: "glass rounded-2xl p-3 text-center", children: [_jsx("p", { className: "text-2xl font-bold text-white", children: results.length }), _jsx("p", { className: "text-white/60 text-xs", children: "Testlar" })] }), _jsxs("div", { className: "glass rounded-2xl p-3 text-center", children: [_jsx("p", { className: "text-2xl font-bold text-green-400", children: results.filter(r => r.isCertified).length }), _jsx("p", { className: "text-white/60 text-xs", children: "Sertifikat" })] }), _jsxs("div", { className: "glass rounded-2xl p-3 text-center", children: [_jsx("p", { className: "text-2xl font-bold text-blue-400", children: results.length > 0 ? Math.max(...results.map(r => r.scaledScore)) : 0 }), _jsx("p", { className: "text-white/60 text-xs", children: "Eng yuqori" })] })] }), _jsx("h3", { className: "text-lg font-bold text-white mb-3", children: "\uD83D\uDCCA Natijalar" }), results.length === 0 ? (_jsxs("div", { className: "glass rounded-2xl p-8 text-center", children: [_jsx("span", { className: "text-4xl mb-3 block", children: "\uD83D\uDCED" }), _jsx("p", { className: "text-white/60", children: "Hali natijalar yo'q" }), _jsx("button", { onClick: () => navigate('/take-test'), className: "mt-4 bg-blue-500/20 text-blue-300 px-4 py-2 rounded-xl", children: "Test ishlash" })] })) : (_jsx("div", { className: "space-y-3", children: results.map((r) => (_jsxs("div", { className: "glass rounded-2xl p-4", children: [_jsxs("div", { className: "flex items-center justify-between mb-2", children: [_jsxs("div", { className: "flex items-center gap-3", children: [_jsx("div", { className: `w-10 h-10 rounded-xl flex items-center justify-center font-bold ${r.grade === 'A+' || r.grade === 'A' ? 'bg-green-500/30 text-green-300' :
-                                                r.grade === 'B+' || r.grade === 'B' ? 'bg-blue-500/30 text-blue-300' :
-                                                    r.grade === 'C+' || r.grade === 'C' ? 'bg-yellow-500/30 text-yellow-300' :
-                                                        'bg-red-500/30 text-red-300'}`, children: r.grade }), _jsxs("div", { children: [_jsxs("p", { className: "text-white font-semibold", children: ["Test #", r.testCode] }), _jsx("p", { className: "text-white/50 text-xs", children: new Date(r.createdAt).toLocaleDateString('uz-UZ') })] })] }), _jsxs("div", { className: "text-right", children: [_jsx("p", { className: "text-white font-bold", children: r.scaledScore }), _jsxs("p", { className: "text-white/50 text-xs", children: [r.score, "/", r.total] })] })] }), _jsxs("div", { className: "flex items-center justify-between", children: [_jsxs("div", { className: "flex items-center gap-2", children: [_jsxs("span", { className: "text-white/60 text-sm", children: ["\uD83D\uDCC8 ", r.rawScore, "/88 xom ball"] }), _jsxs("span", { className: "text-white/60 text-sm", children: ["\uD83D\uDCCA ", r.percentage, "%"] })] }), _jsx("span", { className: `text-xs px-2 py-1 rounded-lg ${r.isCertified ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`, children: r.isCertified ? '✅ Sertifikat' : '❌ Yo\'q' })] })] }, r.id))) })), _jsx("button", { onClick: () => navigate('/'), className: "w-full mt-6 bg-gradient-to-r from-purple-400 to-pink-600 text-white p-4 rounded-2xl font-bold text-lg btn-hover", children: "\uD83C\uDFE0 Bosh sahifaga qaytish" })] }));
+    return (_jsxs("div", { style: { padding: '16px', paddingBottom: '120px' }, children: [_jsxs("div", { style: {
+                    background: 'rgba(255,255,255,0.08)',
+                    backdropFilter: 'blur(20px)',
+                    borderRadius: '24px',
+                    padding: '24px',
+                    marginBottom: '20px',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                }, children: [_jsxs("div", { style: { display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }, children: [_jsx("div", { style: {
+                                    width: '72px', height: '72px',
+                                    background: 'linear-gradient(135deg, #a855f7, #ec4899)',
+                                    borderRadius: '20px',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    fontSize: '36px',
+                                }, children: "\uD83D\uDC64" }), _jsxs("div", { children: [_jsxs("h2", { style: { fontSize: '22px', fontWeight: 'bold', marginBottom: '4px' }, children: [user?.name, " ", user?.surname] }), _jsx("p", { style: { opacity: 0.6, fontSize: '16px' }, children: user?.phone })] })] }), _jsxs("div", { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }, children: [_jsxs("div", { style: {
+                                    background: 'rgba(255,255,255,0.1)',
+                                    borderRadius: '14px',
+                                    padding: '14px',
+                                }, children: [_jsx("p", { style: { fontSize: '12px', opacity: 0.6, marginBottom: '4px' }, children: "\uD83D\uDCCD Viloyat" }), _jsx("p", { style: { fontWeight: '600', fontSize: '16px' }, children: user?.region })] }), _jsxs("div", { style: {
+                                    background: 'rgba(255,255,255,0.1)',
+                                    borderRadius: '14px',
+                                    padding: '14px',
+                                }, children: [_jsx("p", { style: { fontSize: '12px', opacity: 0.6, marginBottom: '4px' }, children: "\uD83C\uDFD8\uFE0F Tuman" }), _jsx("p", { style: { fontWeight: '600', fontSize: '16px' }, children: user?.district })] })] })] }), _jsx("div", { style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '24px' }, children: [
+                    { label: 'Testlar', value: results.length.toString(), color: '#60a5fa' },
+                    { label: 'Sertifikat', value: results.filter(r => r.isCertified).length.toString(), color: '#34d399' },
+                    { label: 'Eng yuqori', value: results.length > 0 ? Math.max(...results.map(r => r.scaledScore)).toString() : '0', color: '#f472b6' },
+                ].map((stat, i) => (_jsxs("div", { style: {
+                        background: 'rgba(255,255,255,0.08)',
+                        backdropFilter: 'blur(20px)',
+                        borderRadius: '16px',
+                        padding: '16px 12px',
+                        textAlign: 'center',
+                        border: '1px solid rgba(255,255,255,0.12)',
+                    }, children: [_jsx("p", { style: { fontSize: '24px', fontWeight: 'bold', color: stat.color, marginBottom: '4px' }, children: stat.value }), _jsx("p", { style: { fontSize: '12px', opacity: 0.6 }, children: stat.label })] }, i))) }), _jsx("h3", { style: { fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }, children: "\uD83D\uDCCA Natijalar" }), results.length === 0 ? (_jsxs("div", { style: {
+                    background: 'rgba(255,255,255,0.08)',
+                    backdropFilter: 'blur(20px)',
+                    borderRadius: '20px',
+                    padding: '32px 20px',
+                    textAlign: 'center',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                }, children: [_jsx("span", { style: { fontSize: '48px', display: 'block', marginBottom: '12px' }, children: "\uD83D\uDCED" }), _jsx("p", { style: { opacity: 0.6, marginBottom: '16px' }, children: "Hali natijalar yo'q" }), _jsx("button", { onClick: () => navigate('/take-test'), style: {
+                            background: 'rgba(59,130,246,0.2)',
+                            color: '#93c5fd',
+                            border: 'none',
+                            borderRadius: '12px',
+                            padding: '12px 20px',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                        }, children: "Test ishlash" })] })) : (_jsx("div", { style: { display: 'flex', flexDirection: 'column', gap: '12px' }, children: results.map((r) => (_jsxs("div", { style: {
+                        background: 'rgba(255,255,255,0.08)',
+                        backdropFilter: 'blur(20px)',
+                        borderRadius: '16px',
+                        padding: '16px',
+                        border: '1px solid rgba(255,255,255,0.12)',
+                    }, children: [_jsxs("div", { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }, children: [_jsxs("div", { style: { display: 'flex', alignItems: 'center', gap: '12px' }, children: [_jsx("div", { style: {
+                                                width: '48px', height: '48px',
+                                                borderRadius: '14px',
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                fontSize: '20px', fontWeight: 'bold',
+                                                background: r.grade.startsWith('A') ? 'rgba(16,185,129,0.3)' :
+                                                    r.grade.startsWith('B') ? 'rgba(59,130,246,0.3)' :
+                                                        r.grade.startsWith('C') ? 'rgba(245,158,11,0.3)' : 'rgba(239,68,68,0.3)',
+                                                color: r.grade.startsWith('A') ? '#6ee7b7' :
+                                                    r.grade.startsWith('B') ? '#93c5fd' :
+                                                        r.grade.startsWith('C') ? '#fcd34d' : '#fca5a5',
+                                            }, children: r.grade }), _jsxs("div", { children: [_jsxs("p", { style: { fontWeight: 'bold', fontSize: '16px' }, children: ["Test #", r.testCode] }), _jsx("p", { style: { opacity: 0.5, fontSize: '12px' }, children: new Date(r.createdAt).toLocaleDateString('uz-UZ') })] })] }), _jsxs("div", { style: { textAlign: 'right' }, children: [_jsx("p", { style: { fontWeight: 'bold', fontSize: '20px', color: '#60a5fa' }, children: r.scaledScore }), _jsxs("p", { style: { opacity: 0.5, fontSize: '12px' }, children: [r.score, "/", r.total] })] })] }), _jsxs("div", { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' }, children: [_jsxs("div", { style: { display: 'flex', gap: '12px' }, children: [_jsxs("span", { style: { fontSize: '13px', opacity: 0.6 }, children: ["\uD83D\uDCC8 ", r.rawScore, "/88"] }), _jsxs("span", { style: { fontSize: '13px', opacity: 0.6 }, children: ["\uD83D\uDCCA ", r.percentage, "%"] })] }), _jsx("span", { style: {
+                                        fontSize: '12px',
+                                        padding: '6px 12px',
+                                        borderRadius: '8px',
+                                        fontWeight: '600',
+                                        background: r.isCertified ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)',
+                                        color: r.isCertified ? '#6ee7b7' : '#fca5a5',
+                                    }, children: r.isCertified ? '✅ Sertifikat' : '❌ Yo\'q' })] })] }, r.id))) }))] }));
 }
 //# sourceMappingURL=Profile.js.map

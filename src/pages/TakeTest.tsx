@@ -50,65 +50,112 @@ export default function TakeTest() {
   // Natija sahifasi
   if (result) {
     return (
-      <div className="min-h-screen p-4">
-        <div className="glass rounded-3xl p-6 mb-6 text-center">
-          <div className={`w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center ${
-            result.isCertified ? 'bg-gradient-to-br from-green-400 to-emerald-600' : 'bg-gradient-to-br from-red-400 to-pink-600'
-          }`}>
-            <span className="text-4xl">{result.isCertified ? '🏆' : '📊'}</span>
+      <div style={{ padding: '20px', paddingBottom: '120px' }}>
+        <div style={{
+          background: 'rgba(255,255,255,0.08)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '24px',
+          padding: '32px 20px',
+          textAlign: 'center',
+          marginBottom: '20px',
+          border: '1px solid rgba(255,255,255,0.12)',
+        }}>
+          <div style={{
+            width: '80px', height: '80px', margin: '0 auto 16px',
+            borderRadius: '50%',
+            background: result.isCertified
+              ? 'linear-gradient(135deg, #10b981, #059669)'
+              : 'linear-gradient(135deg, #ef4444, #dc2626)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '40px',
+          }}>
+            {result.isCertified ? '🏆' : '📊'}
           </div>
-          <h2 className="text-2xl font-bold text-white mb-1">Natija</h2>
-          <p className="text-white/60">Test #{test?.testCode}</p>
+          <h2 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '8px' }}>Natija</h2>
+          <p style={{ opacity: 0.6 }}>Test #{test?.testCode}</p>
         </div>
 
-        <div className="glass rounded-2xl p-4 mb-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/10 rounded-xl p-3 text-center">
-              <p className="text-white/60 text-xs">✅ To'g'ri</p>
-              <p className="text-white font-bold text-xl">{result.score}/{result.total}</p>
-            </div>
-            <div className="bg-white/10 rounded-xl p-3 text-center">
-              <p className="text-white/60 text-xs">📈 Xom ball</p>
-              <p className="text-white font-bold text-xl">{result.rawScore}/88</p>
-            </div>
-            <div className="bg-white/10 rounded-xl p-3 text-center">
-              <p className="text-white/60 text-xs">🎯 Ball</p>
-              <p className="text-blue-400 font-bold text-xl">{result.scaledScore}</p>
-            </div>
-            <div className="bg-white/10 rounded-xl p-3 text-center">
-              <p className="text-white/60 text-xs">📊 Foiz</p>
-              <p className="text-white font-bold text-xl">{result.percentage}%</p>
-            </div>
+        <div style={{
+          background: 'rgba(255,255,255,0.08)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '20px',
+          padding: '20px',
+          marginBottom: '20px',
+          border: '1px solid rgba(255,255,255,0.12)',
+        }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            {[
+              { label: "✅ To'g'ri", value: `${result.score}/${result.total}` },
+              { label: '📈 Xom ball', value: `${result.rawScore}/88` },
+              { label: '🎯 Ball', value: result.scaledScore.toString() },
+              { label: '📊 Foiz', value: `${result.percentage}%` },
+            ].map((item, i) => (
+              <div key={i} style={{
+                background: 'rgba(255,255,255,0.1)',
+                borderRadius: '16px',
+                padding: '16px',
+                textAlign: 'center',
+              }}>
+                <p style={{ fontSize: '12px', opacity: 0.6, marginBottom: '4px' }}>{item.label}</p>
+                <p style={{ fontSize: '24px', fontWeight: 'bold', color: i === 2 ? '#60a5fa' : '#fff' }}>
+                  {item.value}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="glass rounded-2xl p-4 mb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold ${
-                result.grade === 'A+' || result.grade === 'A' ? 'bg-green-500/30 text-green-300' :
-                result.grade === 'B+' || result.grade === 'B' ? 'bg-blue-500/30 text-blue-300' :
-                result.grade === 'C+' || result.grade === 'C' ? 'bg-yellow-500/30 text-yellow-300' :
-                'bg-red-500/30 text-red-300'
-              }`}>
-                {result.grade}
-              </div>
-              <div>
-                <p className="text-white font-bold">Daraja</p>
-                <p className="text-white/60 text-sm">Milliy Sertifikat</p>
-              </div>
+        <div style={{
+          background: 'rgba(255,255,255,0.08)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '20px',
+          padding: '20px',
+          marginBottom: '20px',
+          border: '1px solid rgba(255,255,255,0.12)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{
+              width: '56px', height: '56px', borderRadius: '16px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '24px', fontWeight: 'bold',
+              background: result.grade.startsWith('A') ? 'rgba(16,185,129,0.3)' :
+                result.grade.startsWith('B') ? 'rgba(59,130,246,0.3)' :
+                result.grade.startsWith('C') ? 'rgba(245,158,11,0.3)' : 'rgba(239,68,68,0.3)',
+              color: result.grade.startsWith('A') ? '#6ee7b7' :
+                result.grade.startsWith('B') ? '#93c5fd' :
+                result.grade.startsWith('C') ? '#fcd34d' : '#fca5a5',
+            }}>
+              {result.grade}
             </div>
-            <div className={`px-4 py-2 rounded-xl font-bold ${
-              result.isCertified ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'
-            }`}>
-              {result.isCertified ? '✅ Sertifikat' : '❌ No'}
+            <div>
+              <p style={{ fontWeight: 'bold', fontSize: '16px' }}>Daraja</p>
+              <p style={{ opacity: 0.6, fontSize: '14px' }}>Milliy Sertifikat</p>
             </div>
+          </div>
+          <div style={{
+            padding: '10px 20px',
+            borderRadius: '12px',
+            fontWeight: 'bold',
+            background: result.isCertified ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)',
+            color: result.isCertified ? '#6ee7b7' : '#fca5a5',
+          }}>
+            {result.isCertified ? '✅ Sertifikat' : '❌ Yo\'q'}
           </div>
         </div>
 
         {!result.isCertified && (
-          <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-4 mb-4">
-            <p className="text-yellow-200 text-sm text-center">
+          <div style={{
+            background: 'rgba(245,158,11,0.1)',
+            border: '1px solid rgba(245,158,11,0.2)',
+            borderRadius: '16px',
+            padding: '16px',
+            marginBottom: '20px',
+            textAlign: 'center',
+          }}>
+            <p style={{ color: '#fcd34d', fontSize: '14px' }}>
               Sertifikat olish uchun kamida <strong>60.00</strong> ball (B daraja) to'plashingiz kerak
             </p>
           </div>
@@ -116,7 +163,17 @@ export default function TakeTest() {
 
         <button
           onClick={() => navigate('/')}
-          className="w-full bg-gradient-to-r from-blue-400 to-indigo-600 text-white p-4 rounded-2xl font-bold text-lg btn-hover"
+          style={{
+            width: '100%',
+            padding: '18px',
+            background: 'linear-gradient(135deg, #3b82f6, #6366f1)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '16px',
+            fontSize: '18px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+          }}
         >
           🏠 Bosh sahifaga qaytish
         </button>
@@ -127,43 +184,86 @@ export default function TakeTest() {
   // Test kiritish sahifasi
   if (!test) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="glass rounded-3xl p-8 w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 mx-auto mb-4 bg-blue-500/20 rounded-2xl flex items-center justify-center">
-              <span className="text-3xl">📋</span>
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px',
+      }}>
+        <div style={{
+          background: 'rgba(255,255,255,0.08)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '28px',
+          padding: '32px 24px',
+          width: '100%',
+          maxWidth: '400px',
+          border: '1px solid rgba(255,255,255,0.12)',
+        }}>
+          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+            <div style={{
+              width: '72px', height: '72px', margin: '0 auto 16px',
+              background: 'rgba(59,130,246,0.2)',
+              borderRadius: '20px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '36px',
+            }}>
+              📋
             </div>
-            <h2 className="text-2xl font-bold text-white">Test Ishlash</h2>
-            <p className="text-white/60 mt-1">Test kodini kiriting</p>
+            <h2 style={{ fontSize: '26px', fontWeight: 'bold', marginBottom: '8px' }}>Test Ishlash</h2>
+            <p style={{ opacity: 0.6 }}>Test kodini kiriting</p>
           </div>
 
           {error && (
-            <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-3 mb-4">
-              <p className="text-red-200 text-sm">{error}</p>
+            <div style={{
+              background: 'rgba(239,68,68,0.2)',
+              border: '1px solid rgba(239,68,68,0.3)',
+              borderRadius: '12px',
+              padding: '12px',
+              marginBottom: '20px',
+            }}>
+              <p style={{ color: '#fca5a5', fontSize: '14px' }}>{error}</p>
             </div>
           )}
 
-          <div className="mb-6">
+          <div style={{ marginBottom: '24px' }}>
             <input
               type="number"
               value={testCode}
               onChange={e => setTestCode(e.target.value)}
               placeholder="Masalan: 1"
-              className="input-modern w-full p-4 rounded-xl text-gray-800 text-center text-2xl font-bold placeholder-gray-300"
+              style={{
+                width: '100%',
+                padding: '18px',
+                background: 'rgba(255,255,255,0.1)',
+                border: '2px solid rgba(255,255,255,0.15)',
+                borderRadius: '16px',
+                color: 'white',
+                fontSize: '28px',
+                fontWeight: 'bold',
+                textAlign: 'center',
+                outline: 'none',
+              }}
             />
           </div>
 
           <button
             onClick={loadTest}
             disabled={loading || !testCode}
-            className="w-full bg-gradient-to-r from-blue-400 to-indigo-600 text-white p-4 rounded-2xl font-bold text-lg btn-hover disabled:opacity-50"
+            style={{
+              width: '100%',
+              padding: '18px',
+              background: 'linear-gradient(135deg, #3b82f6, #6366f1)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '16px',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              opacity: loading || !testCode ? 0.5 : 1,
+            }}
           >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                Qidirilmoqda...
-              </span>
-            ) : '🔍 Testni topish'}
+            {loading ? '🔍 Qidirilmoqda...' : '🔍 Testni topish'}
           </button>
         </div>
       </div>
@@ -172,56 +272,117 @@ export default function TakeTest() {
 
   // Test ishlash sahifasi
   return (
-    <div className="min-h-screen p-4 pb-8">
+    <div style={{ padding: '16px', paddingBottom: '120px' }}>
       {/* Header */}
-      <div className="glass rounded-3xl p-6 mb-6 sticky top-0 z-10">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={() => { setTest(null); setAnswers({}); }} className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
+      <div style={{
+        background: 'rgba(255,255,255,0.08)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '20px',
+        padding: '20px',
+        marginBottom: '20px',
+        border: '1px solid rgba(255,255,255,0.12)',
+        position: 'sticky',
+        top: '8px',
+        zIndex: 100,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button
+              onClick={() => { setTest(null); setAnswers({}); }}
+              style={{
+                width: '44px', height: '44px',
+                background: 'rgba(255,255,255,0.15)',
+                borderRadius: '12px',
+                border: 'none',
+                color: 'white',
+                fontSize: '20px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              ←
             </button>
             <div>
-              <h2 className="text-lg font-bold text-white">Test #{test.testCode}</h2>
-              <p className="text-white/60 text-sm">{Object.keys(answers).length} ta javob berildi</p>
+              <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '2px' }}>Test #{test.testCode}</h2>
+              <p style={{ opacity: 0.6, fontSize: '14px' }}>{Object.keys(answers).length} ta javob berildi</p>
             </div>
           </div>
         </div>
-        <div className="w-full bg-white/20 rounded-full h-1.5 mt-3">
-          <div
-            className="bg-gradient-to-r from-blue-400 to-indigo-500 h-1.5 rounded-full transition-all duration-300"
-            style={{ width: `${(Object.keys(answers).length / 55) * 100}%` }}
-          ></div>
+        <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.15)', borderRadius: '3px' }}>
+          <div style={{
+            height: '100%',
+            width: `${(Object.keys(answers).length / 55) * 100}%`,
+            background: 'linear-gradient(90deg, #3b82f6, #6366f1)',
+            borderRadius: '3px',
+            transition: 'width 0.3s ease',
+          }}></div>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-500/20 border border-red-500/30 rounded-2xl p-4 mb-4">
-          <p className="text-red-200 text-sm">{error}</p>
+        <div style={{
+          background: 'rgba(239,68,68,0.2)',
+          border: '1px solid rgba(239,68,68,0.3)',
+          borderRadius: '16px',
+          padding: '16px',
+          marginBottom: '20px',
+        }}>
+          <p style={{ color: '#fca5a5', fontSize: '14px' }}>{error}</p>
         </div>
       )}
 
       {/* 1-32 */}
-      <div className="glass rounded-2xl p-4 mb-4">
-        <h3 className="text-white font-bold mb-3 flex items-center gap-2">
-          <span className="w-8 h-8 bg-blue-500/30 rounded-lg flex items-center justify-center text-sm">1-32</span>
+      <div style={{
+        background: 'rgba(255,255,255,0.08)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '20px',
+        padding: '20px',
+        marginBottom: '20px',
+        border: '1px solid rgba(255,255,255,0.12)',
+      }}>
+        <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span style={{
+            width: '36px', height: '36px',
+            background: 'rgba(59,130,246,0.3)',
+            borderRadius: '10px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '14px',
+          }}>1-32</span>
           Savollar (A/B/C/D)
         </h3>
-        <div className="space-y-2">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {Array.from({ length: 32 }, (_, i) => i + 1).map(q => (
-            <div key={q} className="flex items-center gap-2 bg-white/10 rounded-xl p-2">
-              <span className="text-white/60 w-8 text-center font-mono text-sm">{q}</span>
-              <div className="flex gap-1 flex-1">
+            <div key={q} style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              background: 'rgba(255,255,255,0.08)',
+              borderRadius: '14px',
+              padding: '12px',
+            }}>
+              <span style={{ opacity: 0.6, width: '32px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }}>{q}</span>
+              <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
                 {OPTIONS_4.map(opt => (
                   <button
                     key={opt}
                     onClick={() => setAnswer(String(q), opt)}
-                    className={`flex-1 py-2 rounded-lg font-bold text-sm transition-all ${
-                      answers[String(q)] === opt
-                        ? 'bg-blue-500 text-white shadow-lg'
-                        : 'bg-white/10 text-white/60 hover:bg-white/20'
-                    }`}
+                    style={{
+                      flex: 1,
+                      padding: '14px 8px',
+                      borderRadius: '12px',
+                      fontWeight: 'bold',
+                      fontSize: '16px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      background: answers[String(q)] === opt
+                        ? 'linear-gradient(135deg, #3b82f6, #6366f1)'
+                        : 'rgba(255,255,255,0.1)',
+                      color: answers[String(q)] === opt ? 'white' : 'rgba(255,255,255,0.6)',
+                      transform: answers[String(q)] === opt ? 'scale(1.05)' : 'scale(1)',
+                    }}
                   >
                     {opt}
                   </button>
@@ -233,25 +394,56 @@ export default function TakeTest() {
       </div>
 
       {/* 33-35 */}
-      <div className="glass rounded-2xl p-4 mb-4">
-        <h3 className="text-white font-bold mb-3 flex items-center gap-2">
-          <span className="w-8 h-8 bg-purple-500/30 rounded-lg flex items-center justify-center text-sm">33-35</span>
+      <div style={{
+        background: 'rgba(255,255,255,0.08)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '20px',
+        padding: '20px',
+        marginBottom: '20px',
+        border: '1px solid rgba(255,255,255,0.12)',
+      }}>
+        <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span style={{
+            width: '36px', height: '36px',
+            background: 'rgba(168,85,247,0.3)',
+            borderRadius: '10px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '14px',
+          }}>33-35</span>
           Savollar (A-F)
         </h3>
-        <div className="space-y-2">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {Array.from({ length: 3 }, (_, i) => i + 33).map(q => (
-            <div key={q} className="flex items-center gap-2 bg-white/10 rounded-xl p-2">
-              <span className="text-white/60 w-8 text-center font-mono text-sm">{q}</span>
-              <div className="flex gap-1 flex-1 flex-wrap">
+            <div key={q} style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              background: 'rgba(255,255,255,0.08)',
+              borderRadius: '14px',
+              padding: '12px',
+            }}>
+              <span style={{ opacity: 0.6, width: '32px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }}>{q}</span>
+              <div style={{ display: 'flex', gap: '8px', flex: 1, flexWrap: 'wrap' }}>
                 {OPTIONS_6.map(opt => (
                   <button
                     key={opt}
                     onClick={() => setAnswer(String(q), opt)}
-                    className={`flex-1 min-w-[36px] py-2 rounded-lg font-bold text-sm transition-all ${
-                      answers[String(q)] === opt
-                        ? 'bg-purple-500 text-white shadow-lg'
-                        : 'bg-white/10 text-white/60 hover:bg-white/20'
-                    }`}
+                    style={{
+                      flex: 1,
+                      minWidth: '44px',
+                      padding: '14px 8px',
+                      borderRadius: '12px',
+                      fontWeight: 'bold',
+                      fontSize: '16px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      background: answers[String(q)] === opt
+                        ? 'linear-gradient(135deg, #a855f7, #9333ea)'
+                        : 'rgba(255,255,255,0.1)',
+                      color: answers[String(q)] === opt ? 'white' : 'rgba(255,255,255,0.6)',
+                      transform: answers[String(q)] === opt ? 'scale(1.05)' : 'scale(1)',
+                    }}
                   >
                     {opt}
                   </button>
@@ -263,22 +455,53 @@ export default function TakeTest() {
       </div>
 
       {/* 36-45 */}
-      <div className="glass rounded-2xl p-4 mb-4">
-        <h3 className="text-white font-bold mb-3 flex items-center gap-2">
-          <span className="w-8 h-8 bg-orange-500/30 rounded-lg flex items-center justify-center text-sm">36-45</span>
+      <div style={{
+        background: 'rgba(255,255,255,0.08)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '20px',
+        padding: '20px',
+        marginBottom: '20px',
+        border: '1px solid rgba(255,255,255,0.12)',
+      }}>
+        <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span style={{
+            width: '36px', height: '36px',
+            background: 'rgba(249,115,22,0.3)',
+            borderRadius: '10px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '14px',
+          }}>36-45</span>
           Savollar (2 ta javob)
         </h3>
-        <div className="space-y-2">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {Array.from({ length: 10 }, (_, i) => i + 36).map(q => (
-            <div key={q} className="flex items-center gap-2 bg-white/10 rounded-xl p-2">
-              <span className="text-white/60 w-10 text-center font-mono text-sm">{q}</span>
-              <div className="flex gap-2 flex-1">
+            <div key={q} style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              background: 'rgba(255,255,255,0.08)',
+              borderRadius: '14px',
+              padding: '12px',
+            }}>
+              <span style={{ opacity: 0.6, width: '40px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }}>{q}</span>
+              <div style={{ display: 'flex', gap: '12px', flex: 1 }}>
                 <input
                   type="text"
                   placeholder=".1"
                   value={answers[`${q}.1`] || ''}
                   onChange={e => setAnswer(`${q}.1`, e.target.value.toUpperCase())}
-                  className="flex-1 p-2 bg-white/20 rounded-lg text-white text-center font-bold placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  style={{
+                    flex: 1,
+                    padding: '14px',
+                    background: 'rgba(255,255,255,0.15)',
+                    borderRadius: '12px',
+                    color: 'white',
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    fontSize: '18px',
+                    border: '2px solid transparent',
+                    outline: 'none',
+                  }}
                   maxLength={1}
                 />
                 <input
@@ -286,7 +509,18 @@ export default function TakeTest() {
                   placeholder=".2"
                   value={answers[`${q}.2`] || ''}
                   onChange={e => setAnswer(`${q}.2`, e.target.value.toUpperCase())}
-                  className="flex-1 p-2 bg-white/20 rounded-lg text-white text-center font-bold placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  style={{
+                    flex: 1,
+                    padding: '14px',
+                    background: 'rgba(255,255,255,0.15)',
+                    borderRadius: '12px',
+                    color: 'white',
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    fontSize: '18px',
+                    border: '2px solid transparent',
+                    outline: 'none',
+                  }}
                   maxLength={1}
                 />
               </div>
@@ -298,14 +532,21 @@ export default function TakeTest() {
       <button
         onClick={submitTest}
         disabled={loading}
-        className="w-full bg-gradient-to-r from-green-400 to-emerald-600 text-white p-4 rounded-2xl font-bold text-lg btn-hover disabled:opacity-50 shadow-lg"
+        style={{
+          width: '100%',
+          padding: '18px',
+          background: 'linear-gradient(135deg, #10b981, #059669)',
+          color: 'white',
+          border: 'none',
+          borderRadius: '16px',
+          fontSize: '18px',
+          fontWeight: 'bold',
+          cursor: 'pointer',
+          opacity: loading ? 0.5 : 1,
+          boxShadow: '0 8px 24px rgba(16,185,129,0.3)',
+        }}
       >
-        {loading ? (
-          <span className="flex items-center justify-center gap-2">
-            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-            Tekshirilmoqda...
-          </span>
-        ) : "✅ Natijani ko'rish"}
+        {loading ? "⏳ Tekshirilmoqda..." : "✅ Natijani ko'rish"}
       </button>
     </div>
   );

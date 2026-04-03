@@ -28,107 +28,178 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white/80">Yuklanmoqda...</p>
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            width: '64px', height: '64px',
+            border: '4px solid rgba(255,255,255,0.2)',
+            borderTopColor: 'white',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 16px',
+          }}></div>
+          <p style={{ opacity: 0.8 }}>Yuklanmoqda...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen p-4">
+    <div style={{ padding: '16px', paddingBottom: '120px' }}>
       {/* Profile card */}
-      <div className="glass rounded-3xl p-6 mb-6">
-        <div className="flex items-center gap-4 mb-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-600 rounded-2xl flex items-center justify-center">
-            <span className="text-3xl">👤</span>
+      <div style={{
+        background: 'rgba(255,255,255,0.08)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '24px',
+        padding: '24px',
+        marginBottom: '20px',
+        border: '1px solid rgba(255,255,255,0.12)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
+          <div style={{
+            width: '72px', height: '72px',
+            background: 'linear-gradient(135deg, #a855f7, #ec4899)',
+            borderRadius: '20px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '36px',
+          }}>
+            👤
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white">{user?.name} {user?.surname}</h2>
-            <p className="text-white/60">{user?.phone}</p>
+            <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '4px' }}>
+              {user?.name} {user?.surname}
+            </h2>
+            <p style={{ opacity: 0.6, fontSize: '16px' }}>{user?.phone}</p>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white/10 rounded-xl p-3">
-            <p className="text-white/60 text-xs">📍 Viloyat</p>
-            <p className="text-white font-semibold">{user?.region}</p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+          <div style={{
+            background: 'rgba(255,255,255,0.1)',
+            borderRadius: '14px',
+            padding: '14px',
+          }}>
+            <p style={{ fontSize: '12px', opacity: 0.6, marginBottom: '4px' }}>📍 Viloyat</p>
+            <p style={{ fontWeight: '600', fontSize: '16px' }}>{user?.region}</p>
           </div>
-          <div className="bg-white/10 rounded-xl p-3">
-            <p className="text-white/60 text-xs">🏘️ Tuman</p>
-            <p className="text-white font-semibold">{user?.district}</p>
+          <div style={{
+            background: 'rgba(255,255,255,0.1)',
+            borderRadius: '14px',
+            padding: '14px',
+          }}>
+            <p style={{ fontSize: '12px', opacity: 0.6, marginBottom: '4px' }}>🏘️ Tuman</p>
+            <p style={{ fontWeight: '600', fontSize: '16px' }}>{user?.district}</p>
           </div>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
-        <div className="glass rounded-2xl p-3 text-center">
-          <p className="text-2xl font-bold text-white">{results.length}</p>
-          <p className="text-white/60 text-xs">Testlar</p>
-        </div>
-        <div className="glass rounded-2xl p-3 text-center">
-          <p className="text-2xl font-bold text-green-400">
-            {results.filter(r => r.isCertified).length}
-          </p>
-          <p className="text-white/60 text-xs">Sertifikat</p>
-        </div>
-        <div className="glass rounded-2xl p-3 text-center">
-          <p className="text-2xl font-bold text-blue-400">
-            {results.length > 0 ? Math.max(...results.map(r => r.scaledScore)) : 0}
-          </p>
-          <p className="text-white/60 text-xs">Eng yuqori</p>
-        </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '24px' }}>
+        {[
+          { label: 'Testlar', value: results.length.toString(), color: '#60a5fa' },
+          { label: 'Sertifikat', value: results.filter(r => r.isCertified).length.toString(), color: '#34d399' },
+          { label: 'Eng yuqori', value: results.length > 0 ? Math.max(...results.map(r => r.scaledScore)).toString() : '0', color: '#f472b6' },
+        ].map((stat, i) => (
+          <div key={i} style={{
+            background: 'rgba(255,255,255,0.08)',
+            backdropFilter: 'blur(20px)',
+            borderRadius: '16px',
+            padding: '16px 12px',
+            textAlign: 'center',
+            border: '1px solid rgba(255,255,255,0.12)',
+          }}>
+            <p style={{ fontSize: '24px', fontWeight: 'bold', color: stat.color, marginBottom: '4px' }}>
+              {stat.value}
+            </p>
+            <p style={{ fontSize: '12px', opacity: 0.6 }}>{stat.label}</p>
+          </div>
+        ))}
       </div>
 
       {/* Results */}
-      <h3 className="text-lg font-bold text-white mb-3">📊 Natijalar</h3>
+      <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>📊 Natijalar</h3>
       {results.length === 0 ? (
-        <div className="glass rounded-2xl p-8 text-center">
-          <span className="text-4xl mb-3 block">📭</span>
-          <p className="text-white/60">Hali natijalar yo'q</p>
+        <div style={{
+          background: 'rgba(255,255,255,0.08)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '20px',
+          padding: '32px 20px',
+          textAlign: 'center',
+          border: '1px solid rgba(255,255,255,0.12)',
+        }}>
+          <span style={{ fontSize: '48px', display: 'block', marginBottom: '12px' }}>📭</span>
+          <p style={{ opacity: 0.6, marginBottom: '16px' }}>Hali natijalar yo'q</p>
           <button
             onClick={() => navigate('/take-test')}
-            className="mt-4 bg-blue-500/20 text-blue-300 px-4 py-2 rounded-xl"
+            style={{
+              background: 'rgba(59,130,246,0.2)',
+              color: '#93c5fd',
+              border: 'none',
+              borderRadius: '12px',
+              padding: '12px 20px',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+            }}
           >
             Test ishlash
           </button>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {results.map((r) => (
-            <div key={r.id} className="glass rounded-2xl p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
-                    r.grade === 'A+' || r.grade === 'A' ? 'bg-green-500/30 text-green-300' :
-                    r.grade === 'B+' || r.grade === 'B' ? 'bg-blue-500/30 text-blue-300' :
-                    r.grade === 'C+' || r.grade === 'C' ? 'bg-yellow-500/30 text-yellow-300' :
-                    'bg-red-500/30 text-red-300'
-                  }`}>
+            <div key={r.id} style={{
+              background: 'rgba(255,255,255,0.08)',
+              backdropFilter: 'blur(20px)',
+              borderRadius: '16px',
+              padding: '16px',
+              border: '1px solid rgba(255,255,255,0.12)',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{
+                    width: '48px', height: '48px',
+                    borderRadius: '14px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '20px', fontWeight: 'bold',
+                    background: r.grade.startsWith('A') ? 'rgba(16,185,129,0.3)' :
+                      r.grade.startsWith('B') ? 'rgba(59,130,246,0.3)' :
+                      r.grade.startsWith('C') ? 'rgba(245,158,11,0.3)' : 'rgba(239,68,68,0.3)',
+                    color: r.grade.startsWith('A') ? '#6ee7b7' :
+                      r.grade.startsWith('B') ? '#93c5fd' :
+                      r.grade.startsWith('C') ? '#fcd34d' : '#fca5a5',
+                  }}>
                     {r.grade}
                   </div>
                   <div>
-                    <p className="text-white font-semibold">Test #{r.testCode}</p>
-                    <p className="text-white/50 text-xs">
+                    <p style={{ fontWeight: 'bold', fontSize: '16px' }}>Test #{r.testCode}</p>
+                    <p style={{ opacity: 0.5, fontSize: '12px' }}>
                       {new Date(r.createdAt).toLocaleDateString('uz-UZ')}
                     </p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-white font-bold">{r.scaledScore}</p>
-                  <p className="text-white/50 text-xs">{r.score}/{r.total}</p>
+                <div style={{ textAlign: 'right' }}>
+                  <p style={{ fontWeight: 'bold', fontSize: '20px', color: '#60a5fa' }}>{r.scaledScore}</p>
+                  <p style={{ opacity: 0.5, fontSize: '12px' }}>{r.score}/{r.total}</p>
                 </div>
               </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-white/60 text-sm">📈 {r.rawScore}/88 xom ball</span>
-                  <span className="text-white/60 text-sm">📊 {r.percentage}%</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <span style={{ fontSize: '13px', opacity: 0.6 }}>📈 {r.rawScore}/88</span>
+                  <span style={{ fontSize: '13px', opacity: 0.6 }}>📊 {r.percentage}%</span>
                 </div>
-                <span className={`text-xs px-2 py-1 rounded-lg ${
-                  r.isCertified ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'
-                }`}>
+                <span style={{
+                  fontSize: '12px',
+                  padding: '6px 12px',
+                  borderRadius: '8px',
+                  fontWeight: '600',
+                  background: r.isCertified ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)',
+                  color: r.isCertified ? '#6ee7b7' : '#fca5a5',
+                }}>
                   {r.isCertified ? '✅ Sertifikat' : '❌ Yo\'q'}
                 </span>
               </div>
@@ -136,13 +207,6 @@ export default function Profile() {
           ))}
         </div>
       )}
-
-      <button
-        onClick={() => navigate('/')}
-        className="w-full mt-6 bg-gradient-to-r from-purple-400 to-pink-600 text-white p-4 rounded-2xl font-bold text-lg btn-hover"
-      >
-        🏠 Bosh sahifaga qaytish
-      </button>
     </div>
   );
 }
