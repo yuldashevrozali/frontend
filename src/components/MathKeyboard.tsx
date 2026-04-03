@@ -1,20 +1,27 @@
 import { useState } from 'react';
 
-type TabType = '123' | 'abc' | 'αβγ' | 'sin/cos';
+type TabType = '123' | 'symbols' | 'abc' | 'αβγ';
 
 const TABS: { key: TabType; label: string }[] = [
   { key: '123', label: '123' },
+  { key: 'symbols', label: '∞≠∈' },
   { key: 'abc', label: 'abc' },
   { key: 'αβγ', label: 'αβγ' },
-  { key: 'sin/cos', label: 'sin/cos' },
 ];
 
+// Keys layout matching the image exactly
 const KEYS: Record<TabType, string[][]> = {
   '123': [
     ['x', 'n', '7', '8', '9', '÷', 'e', 'i', 'π'],
-    ['<', '>', '4', '5', '6', '×', '²', '□', '√'],
-    ['(', ')', '1', '2', '3', '−', '∞', '∀', '⌫'],
+    ['<', '>', '4', '5', '6', '×', 'x²', 'x□', '√'],
+    ['(', ')', '1', '2', '3', '−', '∞', '□', '∀', '⌫'],
     ['⇧', '0', '.', '=', '+', '−', '←', '→', '↵'],
+  ],
+  'symbols': [
+    ['∞', '≠', '∈', '∉', '⊂', '⊃', '∪', '∩', '∅'],
+    ['≤', '≥', '≈', '≡', '∝', '∇', '∂', '∆', '∏'],
+    ['∑', '∫', '∮', '⊥', '∥', '∠', '∡', '⌫', '↵'],
+    ['123', '→', '←', '⇔', '⇒', '⇐', '∀', '∃', ''],
   ],
   'abc': [
     ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o'],
@@ -27,12 +34,6 @@ const KEYS: Record<TabType, string[][]> = {
     ['μ', 'ν', 'ξ', 'π', 'ρ', 'σ', 'τ', 'φ', 'ω'],
     ['Γ', 'Δ', 'Θ', 'Λ', 'Ξ', 'Π', 'Σ', 'Φ', '⌫'],
     ['123', '∞', '', '∈', '', '⊂', '∪', '∩', '↵'],
-  ],
-  'sin/cos': [
-    ['sin', 'cos', 'tan', 'ln', 'log', 'exp', 'abs', '|□|', '||□||'],
-    ['→', '←', '⇔', '∃', '∀', '|', '∈', '∋', '□ᶜ'],
-    ['∪', '∩', '⊂', '→', '—', "□'", '∫', 'd', '⌫'],
-    ['123', 'e', 'π', '∞', ',', ':', '.', '<', '↵'],
   ],
 };
 
@@ -58,11 +59,15 @@ export default function MathKeyboard({ onInput, onClose }: MathKeyboardProps) {
       setActiveTab('abc');
     } else if (key === 'αβγ') {
       setActiveTab('αβγ');
-    } else if (key === 'sin/cos') {
-      setActiveTab('sin/cos');
+    } else if (key === '∞≠∈') {
+      setActiveTab('symbols');
+    } else if (key === 'x²') {
+      onInput('²');
+    } else if (key === 'x□') {
+      onInput('^');
     } else {
       onInput(shift ? key.toUpperCase() : key);
-      if (shift) setShift(false);
+      if (shift && key.length === 1 && /[a-zA-Z]/.test(key)) setShift(false);
     }
   };
 
@@ -73,19 +78,18 @@ export default function MathKeyboard({ onInput, onClose }: MathKeyboardProps) {
       left: 0,
       right: 0,
       zIndex: 2000,
-      background: 'rgba(30, 30, 40, 0.98)',
-      backdropFilter: 'blur(20px)',
+      background: '#1a1a2e',
       borderTop: '1px solid rgba(255,255,255,0.1)',
-      padding: '8px',
-      paddingBottom: 'env(safe-area-inset-bottom, 8px)',
+      padding: '6px',
+      paddingBottom: 'env(safe-area-inset-bottom, 6px)',
     }}>
       {/* Tabs */}
       <div style={{
         display: 'flex',
-        gap: '4px',
-        marginBottom: '8px',
-        paddingBottom: '8px',
-        borderBottom: '1px solid rgba(255,255,255,0.1)',
+        gap: '2px',
+        marginBottom: '6px',
+        paddingBottom: '6px',
+        borderBottom: '1px solid rgba(255,255,255,0.08)',
       }}>
         {TABS.map(tab => (
           <button
@@ -93,12 +97,12 @@ export default function MathKeyboard({ onInput, onClose }: MathKeyboardProps) {
             onClick={() => setActiveTab(tab.key)}
             style={{
               flex: 1,
-              padding: '8px 4px',
-              borderRadius: '8px',
+              padding: '6px 2px',
+              borderRadius: '6px',
               border: 'none',
-              background: activeTab === tab.key ? 'rgba(59,130,246,0.3)' : 'transparent',
-              color: activeTab === tab.key ? '#60a5fa' : 'rgba(255,255,255,0.5)',
-              fontSize: '13px',
+              background: activeTab === tab.key ? 'rgba(59,130,246,0.25)' : 'transparent',
+              color: activeTab === tab.key ? '#60a5fa' : 'rgba(255,255,255,0.4)',
+              fontSize: '12px',
               fontWeight: activeTab === tab.key ? 'bold' : 'normal',
               cursor: 'pointer',
             }}
@@ -109,12 +113,12 @@ export default function MathKeyboard({ onInput, onClose }: MathKeyboardProps) {
         <button
           onClick={onClose}
           style={{
-            padding: '8px 12px',
-            borderRadius: '8px',
+            padding: '6px 10px',
+            borderRadius: '6px',
             border: 'none',
-            background: 'rgba(239,68,68,0.2)',
+            background: 'rgba(239,68,68,0.15)',
             color: '#fca5a5',
-            fontSize: '13px',
+            fontSize: '14px',
             cursor: 'pointer',
           }}
         >
@@ -123,43 +127,48 @@ export default function MathKeyboard({ onInput, onClose }: MathKeyboardProps) {
       </div>
 
       {/* Keys */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
         {KEYS[activeTab].map((row, rowIdx) => (
-          <div key={rowIdx} style={{ display: 'flex', gap: '4px' }}>
+          <div key={rowIdx} style={{ display: 'flex', gap: '3px' }}>
             {row.map((key, keyIdx) => {
-              const isSpecial = ['⌫', '↵', '⇧', '123', 'abc', 'αβγ', 'sin/cos'].includes(key);
-              const isWide = key === '⇧' || key === '123' || key === 'abc' || key === 'αβγ' || key === 'sin/cos';
+              const isSpecial = ['⌫', '↵', '⇧', '123', 'abc', 'αβγ', '∞≠∈'].includes(key);
+              const isWide = key === '⇧' || key === '123' || key === 'abc' || key === 'αβγ' || key === '∞≠∈';
               const isBackspace = key === '⌫';
               const isEnter = key === '↵';
+              const isEmpty = key === '';
+
+              if (isEmpty) {
+                return <div key={`${rowIdx}-${keyIdx}`} style={{ flex: 1 }} />;
+              }
 
               return (
                 <button
                   key={`${rowIdx}-${keyIdx}`}
                   onClick={() => handleKey(key)}
                   style={{
-                    flex: isWide ? 1.5 : 1,
-                    padding: isSpecial ? '12px 8px' : '14px 4px',
-                    borderRadius: '10px',
+                    flex: isWide ? 1.3 : 1,
+                    padding: isSpecial ? '10px 4px' : '12px 2px',
+                    borderRadius: '8px',
                     border: 'none',
                     background: isBackspace
-                      ? 'rgba(239,68,68,0.3)'
+                      ? 'rgba(239,68,68,0.25)'
                       : isEnter
-                      ? 'rgba(16,185,129,0.3)'
+                      ? 'rgba(16,185,129,0.25)'
                       : isSpecial
-                      ? 'rgba(255,255,255,0.15)'
-                      : 'rgba(255,255,255,0.1)',
+                      ? 'rgba(255,255,255,0.12)'
+                      : 'rgba(255,255,255,0.08)',
                     color: isBackspace
                       ? '#fca5a5'
                       : isEnter
                       ? '#6ee7b7'
                       : 'white',
-                    fontSize: key.length > 2 ? '11px' : '16px',
+                    fontSize: key.length > 2 ? '10px' : key.length > 1 ? '12px' : '15px',
                     fontWeight: '600',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    minHeight: '44px',
+                    minHeight: '42px',
                     transition: 'all 0.1s ease',
                   }}
                 >

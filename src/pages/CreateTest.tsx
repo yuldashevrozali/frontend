@@ -279,43 +279,89 @@ export default function CreateTest() {
               padding: '12px',
             }}>
               <span style={{ opacity: 0.6, width: '40px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }}>{q}</span>
-              <div style={{ display: 'flex', gap: '12px', flex: 1 }}>
-                <button
-                  onClick={() => openKeyboard(`${q}.1`)}
-                  style={{
-                    flex: 1,
-                    padding: '14px',
-                    background: activeInput === `${q}.1` ? 'rgba(249,115,22,0.3)' : 'rgba(255,255,255,0.15)',
-                    borderRadius: '12px',
-                    color: 'white',
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                    fontSize: '18px',
-                    border: activeInput === `${q}.1` ? '2px solid #f97316' : '2px solid transparent',
-                    cursor: 'pointer',
-                    minHeight: '52px',
-                  }}
-                >
-                  {answerKeys[`${q}.1`] || <span style={{ opacity: 0.4 }}>.1</span>}
-                </button>
-                <button
-                  onClick={() => openKeyboard(`${q}.2`)}
-                  style={{
-                    flex: 1,
-                    padding: '14px',
-                    background: activeInput === `${q}.2` ? 'rgba(249,115,22,0.3)' : 'rgba(255,255,255,0.15)',
-                    borderRadius: '12px',
-                    color: 'white',
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                    fontSize: '18px',
-                    border: activeInput === `${q}.2` ? '2px solid #f97316' : '2px solid transparent',
-                    cursor: 'pointer',
-                    minHeight: '52px',
-                  }}
-                >
-                  {answerKeys[`${q}.2`] || <span style={{ opacity: 0.4 }}>.2</span>}
-                </button>
+              <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
+                {/* .1 input + keyboard button */}
+                <div style={{ display: 'flex', flex: 1, gap: '4px' }}>
+                  <button
+                    onClick={() => openKeyboard(`${q}.1`)}
+                    style={{
+                      flex: 1,
+                      padding: '14px 10px',
+                      background: activeInput === `${q}.1` ? 'rgba(249,115,22,0.3)' : 'rgba(255,255,255,0.15)',
+                      borderRadius: '12px',
+                      color: 'white',
+                      textAlign: 'left',
+                      fontWeight: 'bold',
+                      fontSize: '16px',
+                      border: activeInput === `${q}.1` ? '2px solid #f97316' : '2px solid transparent',
+                      cursor: 'pointer',
+                      minHeight: '52px',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {answerKeys[`${q}.1`] || <span style={{ opacity: 0.4 }}>.1</span>}
+                  </button>
+                  <button
+                    onClick={() => openKeyboard(`${q}.1`)}
+                    style={{
+                      width: '44px',
+                      background: 'rgba(255,255,255,0.1)',
+                      borderRadius: '12px',
+                      border: 'none',
+                      color: 'rgba(255,255,255,0.6)',
+                      fontSize: '18px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    ⌨
+                  </button>
+                </div>
+                {/* .2 input + keyboard button */}
+                <div style={{ display: 'flex', flex: 1, gap: '4px' }}>
+                  <button
+                    onClick={() => openKeyboard(`${q}.2`)}
+                    style={{
+                      flex: 1,
+                      padding: '14px 10px',
+                      background: activeInput === `${q}.2` ? 'rgba(249,115,22,0.3)' : 'rgba(255,255,255,0.15)',
+                      borderRadius: '12px',
+                      color: 'white',
+                      textAlign: 'left',
+                      fontWeight: 'bold',
+                      fontSize: '16px',
+                      border: activeInput === `${q}.2` ? '2px solid #f97316' : '2px solid transparent',
+                      cursor: 'pointer',
+                      minHeight: '52px',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {answerKeys[`${q}.2`] || <span style={{ opacity: 0.4 }}>.2</span>}
+                  </button>
+                  <button
+                    onClick={() => openKeyboard(`${q}.2`)}
+                    style={{
+                      width: '44px',
+                      background: 'rgba(255,255,255,0.1)',
+                      borderRadius: '12px',
+                      border: 'none',
+                      color: 'rgba(255,255,255,0.6)',
+                      fontSize: '18px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    ⌨
+                  </button>
+                </div>
               </div>
             </div>
           ))}
