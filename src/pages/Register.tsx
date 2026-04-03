@@ -24,13 +24,11 @@ export default function Register() {
       setUserName(res.data.user?.name || data.name);
       setRegistered(true);
 
-      // Botga ma'lumot yuborish (Web App orqali)
       if (window.Telegram?.WebApp) {
         window.Telegram.WebApp.sendData(JSON.stringify({
           action: 'registered',
           name: res.data.user?.name || data.name
         }));
-        // Web App'ni yopish
         setTimeout(() => {
           window.Telegram.WebApp.close();
         }, 1500);
@@ -42,31 +40,81 @@ export default function Register() {
 
   if (registered) {
     return (
-      <div className="p-4 max-w-md mx-auto text-center">
-        <div className="text-6xl mb-4">🎉</div>
-        <h2 className="text-2xl font-bold mb-2">Xush kelibsiz, {userName}!</h2>
-        <p className="text-gray-500 mb-6">Siz muvaffaqiyatli ro'yxatdan o'tdingiz.</p>
-        <p className="text-sm text-blue-500">Web App yopilmoqda...</p>
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="glass rounded-3xl p-8 w-full max-w-md text-center animate-fade-in">
+          <div className="w-20 h-20 mx-auto mb-6 bg-green-500 rounded-full flex items-center justify-center">
+            <span className="text-4xl">🎉</span>
+          </div>
+          <h2 className="text-3xl font-bold text-white mb-2">Xush kelibsiz!</h2>
+          <p className="text-white/80 text-lg mb-2">{userName}</p>
+          <p className="text-white/60 mb-6">Siz muvaffaqiyatli ro'yxatdan o'tdingiz</p>
+          <div className="w-full bg-white/20 rounded-full h-2 mb-4">
+            <div className="bg-green-400 h-2 rounded-full animate-pulse" style={{ width: '100%' }}></div>
+          </div>
+          <p className="text-white/50 text-sm">Web App yopilmoqda...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <h2 className="text-xl font-bold mb-4">📝 Ro'yxatdan o'tish</h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-        <input {...register("name", { required: true })} placeholder="Ism" className="w-full p-2 border rounded" />
-        <input {...register("surname", { required: true })} placeholder="Familiya" className="w-full p-2 border rounded" />
-        <div>
-          <input {...register("phone", { required: true, pattern: /^\+998\d{9}$/ })} placeholder="+998901234567" className="w-full p-2 border rounded" />
-          {errors.phone && <p className="text-red-500 text-sm">Telefon +998 bilan boshlanishi va 9 raqam bo'lishi kerak</p>}
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="glass rounded-3xl p-8 w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 mx-auto mb-4 bg-white/20 rounded-2xl flex items-center justify-center">
+            <span className="text-3xl">📝</span>
+          </div>
+          <h2 className="text-2xl font-bold text-white">Ro'yxatdan o'tish</h2>
+          <p className="text-white/60 mt-1">Ma'lumotlaringizni kiriting</p>
         </div>
-        <input {...register("region", { required: true })} placeholder="Viloyat" className="w-full p-2 border rounded" />
-        <input {...register("district", { required: true })} placeholder="Tuman" className="w-full p-2 border rounded" />
-        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
-          ✅ Yuborish
-        </button>
-      </form>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <input
+              {...register("name", { required: true })}
+              placeholder="Ism"
+              className="input-modern w-full p-4 rounded-xl text-gray-800 placeholder-gray-400"
+            />
+          </div>
+          <div>
+            <input
+              {...register("surname", { required: true })}
+              placeholder="Familiya"
+              className="input-modern w-full p-4 rounded-xl text-gray-800 placeholder-gray-400"
+            />
+          </div>
+          <div>
+            <input
+              {...register("phone", { required: true, pattern: /^\+998\d{9}$/ })}
+              placeholder="+998901234567"
+              className="input-modern w-full p-4 rounded-xl text-gray-800 placeholder-gray-400"
+            />
+            {errors.phone && (
+              <p className="text-red-300 text-sm mt-1">Telefon +998 bilan boshlanishi va 9 raqam bo'lishi kerak</p>
+            )}
+          </div>
+          <div>
+            <input
+              {...register("region", { required: true })}
+              placeholder="Viloyat"
+              className="input-modern w-full p-4 rounded-xl text-gray-800 placeholder-gray-400"
+            />
+          </div>
+          <div>
+            <input
+              {...register("district", { required: true })}
+              placeholder="Tuman"
+              className="input-modern w-full p-4 rounded-xl text-gray-800 placeholder-gray-400"
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-white text-purple-600 p-4 rounded-xl font-bold text-lg btn-hover"
+          >
+            ✅ Yuborish
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

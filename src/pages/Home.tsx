@@ -22,35 +22,61 @@ export default function Home() {
   }, [navigate]);
 
   if (loading) {
-    return <div className="p-4 text-center">Yuklanmoqda...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white/80">Yuklanmoqda...</p>
+        </div>
+      </div>
+    );
   }
 
+  const menuItems = [
+    { icon: '📝', title: 'Test Yaratish', desc: 'Yangi test yarating', color: 'from-green-400 to-emerald-600', path: '/create-test' },
+    { icon: '📋', title: 'Test Ishlash', desc: 'Test kodini kiriting', color: 'from-blue-400 to-indigo-600', path: '/take-test' },
+    { icon: '👤', title: 'Profil', desc: 'Natijalaringiz', color: 'from-purple-400 to-pink-600', path: '/profile' },
+  ];
+
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-2">👋 Xush kelibsiz, {user?.name}!</h1>
-      <p className="text-gray-500 mb-6">Menularni tanlang:</p>
+    <div className="min-h-screen p-4">
+      {/* Header */}
+      <div className="glass rounded-3xl p-6 mb-6">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
+            <span className="text-2xl">👋</span>
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-white">Xush kelibsiz!</h1>
+            <p className="text-white/70">{user?.name} {user?.surname}</p>
+          </div>
+        </div>
+      </div>
 
-      <div className="space-y-3">
-        <button
-          onClick={() => navigate('/create-test')}
-          className="w-full p-4 bg-green-500 text-white rounded-lg font-semibold text-lg hover:bg-green-600 transition"
-        >
-          📝 Test Yaratish
-        </button>
-
-        <button
-          onClick={() => navigate('/take-test')}
-          className="w-full p-4 bg-blue-500 text-white rounded-lg font-semibold text-lg hover:bg-blue-600 transition"
-        >
-          📋 Test Ishlash
-        </button>
-
-        <button
-          onClick={() => navigate('/profile')}
-          className="w-full p-4 bg-purple-500 text-white rounded-lg font-semibold text-lg hover:bg-purple-600 transition"
-        >
-          👤 Profil
-        </button>
+      {/* Menu */}
+      <div className="space-y-4">
+        {menuItems.map((item) => (
+          <button
+            key={item.path}
+            onClick={() => navigate(item.path)}
+            className="w-full glass rounded-2xl p-4 btn-hover text-left"
+          >
+            <div className="flex items-center gap-4">
+              <div className={`w-14 h-14 bg-gradient-to-br ${item.color} rounded-2xl flex items-center justify-center`}>
+                <span className="text-2xl">{item.icon}</span>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white">{item.title}</h3>
+                <p className="text-white/60 text-sm">{item.desc}</p>
+              </div>
+              <div className="ml-auto">
+                <svg className="w-6 h-6 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </button>
+        ))}
       </div>
     </div>
   );

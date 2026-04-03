@@ -2,10 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/client';
 
-// 1-32: A,B,C,D variantlar
-// 33-35: A,B,C,D,E,F variantlar
-// 36-45: Input (2 ta javob: .1 va .2)
-
 const OPTIONS_4 = ['A', 'B', 'C', 'D'];
 const OPTIONS_6 = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -19,14 +15,7 @@ export default function CreateTest() {
     setAnswerKeys(prev => ({ ...prev, [key]: value }));
   };
 
-  // Majburiy kalitlar: 1-35
   const requiredKeys = Array.from({ length: 35 }, (_, i) => String(i + 1));
-  // 36-45 uchun .1 va .2
-  const optionalKeys: string[] = [];
-  for (let i = 36; i <= 45; i++) {
-    optionalKeys.push(`${i}.1`, `${i}.2`);
-  }
-
   const allRequiredFilled = requiredKeys.every(k => answerKeys[k]);
 
   const handleSubmit = async () => {
@@ -38,7 +27,6 @@ export default function CreateTest() {
     setError('');
     try {
       const res = await API.post('/tests/create', { answerKeys });
-      // Web App'ni yopish
       if (window.Telegram?.WebApp) {
         window.Telegram.WebApp.sendData(JSON.stringify({
           action: 'test_created',
@@ -55,80 +43,148 @@ export default function CreateTest() {
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <h2 className="text-xl font-bold mb-4">📝 Test Yaratish</h2>
-      {error && <p className="text-red-500 mb-2">{error}</p>}
+    <div className="min-h-screen p-4 pb-8">
+      {/* Header */}
+      <div className="glass rounded-3xl p-6 mb-6 sticky top-0 z-10">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate('/')} className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <div>
+              <h2 className="text-lg font-bold text-white">Test Yaratish</h2>
+              <p className="text-white/60 text-sm">Javob kalitlarini kiriting</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <span className="text-white/60 text-xs">Progress</span>
+            <p className="text-white font-bold">{Object.keys(answerKeys).length} ta</p>
+          </div>
+        </div>
+        {/* Progress bar */}
+        <div className="w-full bg-white/20 rounded-full h-1.5 mt-3">
+          <div
+            className="bg-gradient-to-r from-green-400 to-emerald-500 h-1.5 rounded-full transition-all duration-300"
+            style={{ width: `${(Object.keys(answerKeys).length / 55) * 100}%` }}
+          ></div>
+        </div>
+      </div>
+
+      {error && (
+        <div className="bg-red-500/20 border border-red-500/30 rounded-2xl p-4 mb-4">
+          <p className="text-red-200 text-sm">{error}</p>
+        </div>
+      )}
 
       {/* 1-32: 4 ta variant */}
-      <h3 className="font-semibold mt-4 mb-2">1-32 savollar (A/B/C/D)</h3>
-      {Array.from({ length: 32 }, (_, i) => i + 1).map(q => (
-        <div key={q} className="mb-2 p-2 border rounded">
-          <p className="font-medium mb-1">{q}-savol</p>
-          <div className="flex gap-2">
-            {OPTIONS_4.map(opt => (
-              <button
-                key={opt}
-                onClick={() => setAnswer(String(q), opt)}
-                className={`flex-1 p-2 rounded ${answerKeys[String(q)] === opt ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-              >
-                {opt}
-              </button>
-            ))}
-          </div>
+      <div className="glass rounded-2xl p-4 mb-4">
+        <h3 className="text-white font-bold mb-3 flex items-center gap-2">
+          <span className="w-8 h-8 bg-blue-500/30 rounded-lg flex items-center justify-center text-sm">1-32</span>
+          Savollar (A/B/C/D)
+        </h3>
+        <div className="space-y-2">
+          {Array.from({ length: 32 }, (_, i) => i + 1).map(q => (
+            <div key={q} className="flex items-center gap-2 bg-white/10 rounded-xl p-2">
+              <span className="text-white/60 w-8 text-center font-mono text-sm">{q}</span>
+              <div className="flex gap-1 flex-1">
+                {OPTIONS_4.map(opt => (
+                  <button
+                    key={opt}
+                    onClick={() => setAnswer(String(q), opt)}
+                    className={`flex-1 py-2 rounded-lg font-bold text-sm transition-all ${
+                      answerKeys[String(q)] === opt
+                        ? 'bg-blue-500 text-white shadow-lg'
+                        : 'bg-white/10 text-white/60 hover:bg-white/20'
+                    }`}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
 
       {/* 33-35: 6 ta variant */}
-      <h3 className="font-semibold mt-4 mb-2">33-35 savollar (A/B/C/D/E/F)</h3>
-      {Array.from({ length: 3 }, (_, i) => i + 33).map(q => (
-        <div key={q} className="mb-2 p-2 border rounded">
-          <p className="font-medium mb-1">{q}-savol</p>
-          <div className="flex gap-1 flex-wrap">
-            {OPTIONS_6.map(opt => (
-              <button
-                key={opt}
-                onClick={() => setAnswer(String(q), opt)}
-                className={`flex-1 min-w-[40px] p-2 rounded ${answerKeys[String(q)] === opt ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-              >
-                {opt}
-              </button>
-            ))}
-          </div>
+      <div className="glass rounded-2xl p-4 mb-4">
+        <h3 className="text-white font-bold mb-3 flex items-center gap-2">
+          <span className="w-8 h-8 bg-purple-500/30 rounded-lg flex items-center justify-center text-sm">33-35</span>
+          Savollar (A-F)
+        </h3>
+        <div className="space-y-2">
+          {Array.from({ length: 3 }, (_, i) => i + 33).map(q => (
+            <div key={q} className="flex items-center gap-2 bg-white/10 rounded-xl p-2">
+              <span className="text-white/60 w-8 text-center font-mono text-sm">{q}</span>
+              <div className="flex gap-1 flex-1 flex-wrap">
+                {OPTIONS_6.map(opt => (
+                  <button
+                    key={opt}
+                    onClick={() => setAnswer(String(q), opt)}
+                    className={`flex-1 min-w-[36px] py-2 rounded-lg font-bold text-sm transition-all ${
+                      answerKeys[String(q)] === opt
+                        ? 'bg-purple-500 text-white shadow-lg'
+                        : 'bg-white/10 text-white/60 hover:bg-white/20'
+                    }`}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
 
       {/* 36-45: Input */}
-      <h3 className="font-semibold mt-4 mb-2">36-45 savollar (Javob kiriting)</h3>
-      {Array.from({ length: 10 }, (_, i) => i + 36).map(q => (
-        <div key={q} className="mb-2 p-2 border rounded">
-          <p className="font-medium mb-1">{q}-savol</p>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              placeholder={`${q}.1 javob`}
-              value={answerKeys[`${q}.1`] || ''}
-              onChange={e => setAnswer(`${q}.1`, e.target.value.toUpperCase())}
-              className="flex-1 p-2 border rounded"
-              maxLength={1}
-            />
-            <input
-              type="text"
-              placeholder={`${q}.2 javob`}
-              value={answerKeys[`${q}.2`] || ''}
-              onChange={e => setAnswer(`${q}.2`, e.target.value.toUpperCase())}
-              className="flex-1 p-2 border rounded"
-              maxLength={1}
-            />
-          </div>
+      <div className="glass rounded-2xl p-4 mb-4">
+        <h3 className="text-white font-bold mb-3 flex items-center gap-2">
+          <span className="w-8 h-8 bg-orange-500/30 rounded-lg flex items-center justify-center text-sm">36-45</span>
+          Savollar (2 ta javob)
+        </h3>
+        <div className="space-y-2">
+          {Array.from({ length: 10 }, (_, i) => i + 36).map(q => (
+            <div key={q} className="flex items-center gap-2 bg-white/10 rounded-xl p-2">
+              <span className="text-white/60 w-10 text-center font-mono text-sm">{q}</span>
+              <div className="flex gap-2 flex-1">
+                <input
+                  type="text"
+                  placeholder=".1"
+                  value={answerKeys[`${q}.1`] || ''}
+                  onChange={e => setAnswer(`${q}.1`, e.target.value.toUpperCase())}
+                  className="flex-1 p-2 bg-white/20 rounded-lg text-white text-center font-bold placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  maxLength={1}
+                />
+                <input
+                  type="text"
+                  placeholder=".2"
+                  value={answerKeys[`${q}.2`] || ''}
+                  onChange={e => setAnswer(`${q}.2`, e.target.value.toUpperCase())}
+                  className="flex-1 p-2 bg-white/20 rounded-lg text-white text-center font-bold placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  maxLength={1}
+                />
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
 
+      {/* Submit button */}
       <button
         onClick={handleSubmit}
         disabled={loading || !allRequiredFilled}
-        className="w-full mt-4 bg-green-500 text-white p-3 rounded-lg font-semibold disabled:opacity-50"
+        className="w-full bg-gradient-to-r from-green-400 to-emerald-600 text-white p-4 rounded-2xl font-bold text-lg btn-hover disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
       >
-        {loading ? 'Yaratilmoqda...' : '✅ Test Yaratish'}
+        {loading ? (
+          <span className="flex items-center justify-center gap-2">
+            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            Yaratilmoqda...
+          </span>
+        ) : (
+          '✅ Test Yaratish'
+        )}
       </button>
     </div>
   );
