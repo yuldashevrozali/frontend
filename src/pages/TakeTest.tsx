@@ -10,7 +10,7 @@ export default function TakeTest() {
   const [testCode, setTestCode] = useState('');
   const [test, setTest] = useState<any>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [result, setResult] = useState<{ score: number; total: number } | null>(null);
+  const [result, setResult] = useState<{ score: number; total: number; rawScore: number; scaledScore: number; percentage: number; grade: string; isCertified: boolean } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -39,7 +39,7 @@ export default function TakeTest() {
     setError('');
     try {
       const res = await API.post(`/tests/${testCode}/submit`, { answers });
-      setResult({ score: res.data.score, total: res.data.total });
+      setResult({ score: res.data.score, total: res.data.total, rawScore: res.data.rawScore, scaledScore: res.data.scaledScore, percentage: res.data.percentage, grade: res.data.grade, isCertified: res.data.isCertified });
     } catch (e: any) {
       setError(e.response?.data?.error || 'Xatolik yuz berdi');
     } finally {
@@ -49,18 +49,62 @@ export default function TakeTest() {
 
   if (result) {
     return (
-      <div className="p-4 max-w-md mx-auto text-center">
-        <div className="text-6xl mb-4">📊</div>
-        <h2 className="text-2xl font-bold mb-4">Natija</h2>
-        <div className="text-4xl font-bold text-blue-500 mb-2">
-          {result.score} / {result.total}
+      <div className="p-4 max-w-md mx-auto">
+        <div className="text-center mb-4">
+          <div className="text-6xl mb-2">📊</div>
+          <h2 className="text-2xl font-bold">Natija</h2>
         </div>
-        <p className="text-gray-500 mb-6">
-          Siz {result.total} ta savoldan {result.score} tasini to'g'ri javob berdingiz
-        </p>
+
+        <div className="bg-white rounded-lg shadow p-4 space-y-3">
+          <div className="flex justify-between items-center">
+            <span className="text-gray-600">✅ To'g'ri javoblar:</span>
+            <span className="font-bold text-lg">{result.score}/{result.total}</span>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <span className="text-gray-600">📈 Xom ball:</span>
+            <span className="font-bold">{result.rawScore}/88.0</span>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <span className="text-gray-600">🎯 Standart ball:</span>
+            <span className="font-bold text-xl text-blue-600">{result.scaledScore}</span>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <span className="text-gray-600">📊 Foiz:</span>
+            <span className="font-bold">{result.percentage}%</span>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <span className="text-gray-600">🏅 Daraja:</span>
+            <span className={`font-bold text-xl px-3 py-1 rounded ${
+              result.grade === 'A+' || result.grade === 'A' ? 'bg-green-100 text-green-700' :
+              result.grade === 'B+' || result.grade === 'B' ? 'bg-blue-100 text-blue-700' :
+              result.grade === 'C+' || result.grade === 'C' ? 'bg-yellow-100 text-yellow-700' :
+              'bg-red-100 text-red-700'
+            }`}>
+              {result.grade}
+            </span>
+          </div>
+
+          <div className="flex justify-between items-center border-t pt-3">
+            <span className="text-gray-600">🔖 Sertifikat:</span>
+            <span className={`font-bold text-lg ${result.isCertified ? 'text-green-600' : 'text-red-600'}`}>
+              {result.isCertified ? '✅ Ha' : '❌ Yo\'q'}
+            </span>
+          </div>
+        </div>
+
+        {!result.isCertified && (
+          <p className="text-sm text-gray-500 mt-3 text-center">
+            Sertifikat olish uchun kamida 60.00 ball (B daraja) to'plashingiz kerak
+          </p>
+        )}
+
         <button
           onClick={() => navigate('/')}
-          className="w-full bg-blue-500 text-white p-3 rounded-lg font-semibold"
+          className="w-full mt-4 bg-blue-500 text-white p-3 rounded-lg font-semibold"
         >
           🏠 Bosh sahifaga qaytish
         </button>
