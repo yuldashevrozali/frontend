@@ -30,6 +30,10 @@ export default function Register() {
           action: 'registered',
           name: res.data.user?.name || data.name
         }));
+        // Web App'ni yopish
+        setTimeout(() => {
+          window.Telegram.WebApp.close();
+        }, 1500);
       }
     } catch (e) {
       alert("Xatolik: " + (e as any).response?.data?.error);
@@ -42,12 +46,7 @@ export default function Register() {
         <div className="text-6xl mb-4">🎉</div>
         <h2 className="text-2xl font-bold mb-2">Xush kelibsiz, {userName}!</h2>
         <p className="text-gray-500 mb-6">Siz muvaffaqiyatli ro'yxatdan o'tdingiz.</p>
-        <button
-          onClick={() => navigate('/')}
-          className="w-full bg-blue-500 text-white p-3 rounded-lg font-semibold hover:bg-blue-600"
-        >
-          🏠 Bosh sahifaga o'tish
-        </button>
+        <p className="text-sm text-blue-500">Web App yopilmoqda...</p>
       </div>
     );
   }
