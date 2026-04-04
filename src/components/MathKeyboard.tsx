@@ -13,6 +13,12 @@ const TABS: { key: TabType; label: string }[] = [
 const SUPERSCRIPT_MAP: Record<string, string> = {
   '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴',
   '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',
+  '-': '⁻', '+': '⁺', '=': '⁼', '(': '⁽', ')': '⁾',
+  'a': 'ᵃ', 'b': 'ᵇ', 'c': 'ᶜ', 'd': 'ᵈ', 'e': 'ᵉ',
+  'f': 'ᶠ', 'g': 'ᵍ', 'h': 'ʰ', 'i': 'ⁱ', 'j': 'ʲ',
+  'k': 'ᵏ', 'l': 'ˡ', 'm': 'ᵐ', 'n': 'ⁿ', 'o': 'ᵒ',
+  'p': 'ᵖ', 'q': 'q', 'r': 'ʳ', 's': 'ˢ', 't': 'ᵗ',
+  'u': 'ᵘ', 'v': 'ᵛ', 'w': 'ʷ', 'x': 'ˣ', 'y': 'ʸ', 'z': 'ᶻ',
 };
 
 // Keys layout
@@ -24,9 +30,9 @@ const KEYS: Record<TabType, string[][]> = {
     ['⇧', '0', '.', '=', '+', '−', '←', '→', '↵'],
   ],
   'symbols': [
-    ['∞', '≠', '∈', '∉', '⊂', '⊃', '', '∩', ''],
+    ['∞', '≠', '∈', '∉', '', '', '∪', '', '∅'],
     ['≤', '≥', '≈', '≡', '∝', '∇', '∂', '∆', '∏'],
-    ['∑', '∫', '∮', '⊥', '∥', '∠', '∡', '⌫', ''],
+    ['∑', '∫', '∮', '⊥', '', '∠', '', '⌫', '↵'],
     ['123', '→', '←', '⇔', '⇒', '⇐', '∀', '∃', ''],
   ],
   'abc': [
@@ -71,12 +77,16 @@ export default function MathKeyboard({ onInput, onClose }: MathKeyboardProps) {
     } else if (key === 'x²') {
       onInput('²');
     } else if (key === 'xⁿ') {
-      // Enter superscript mode - next number will be superscript
-      setSuperscriptMode(true);
-    } else if (superscriptMode && SUPERSCRIPT_MAP[key]) {
-      // Output superscript character
-      onInput(SUPERSCRIPT_MAP[key]);
-      setSuperscriptMode(false);
+      // Toggle superscript mode - ALL subsequent input becomes superscript
+      setSuperscriptMode(!superscriptMode);
+    } else if (superscriptMode) {
+      // In superscript mode - convert everything to superscript
+      if (SUPERSCRIPT_MAP[key]) {
+        onInput(SUPERSCRIPT_MAP[key]);
+      } else {
+        // For characters without superscript, output as-is
+        onInput(key);
+      }
     } else {
       // Normal input
       const outputKey = shift && key.length === 1 && /[a-zA-Z]/.test(key)
@@ -158,13 +168,14 @@ export default function MathKeyboard({ onInput, onClose }: MathKeyboardProps) {
         <div style={{
           textAlign: 'center',
           padding: '4px',
-          background: 'rgba(249,115,22,0.2)',
+          background: 'rgba(249,115,22,0.3)',
           borderRadius: '6px',
           marginBottom: '4px',
           fontSize: '12px',
           color: '#fbbf24',
+          fontWeight: 'bold',
         }}>
-          ️ Daraja rejimi: keyingi sonni kiriting
+          ⚡ Daraja rejimi: barcha belgilar darajaga yoziladi
         </div>
       )}
 
@@ -201,7 +212,7 @@ export default function MathKeyboard({ onInput, onClose }: MathKeyboardProps) {
                       : isEnter
                       ? 'rgba(16,185,129,0.25)'
                       : isSuperscriptBtn && superscriptMode
-                      ? 'rgba(249,115,22,0.4)'
+                      ? 'rgba(249,115,22,0.5)'
                       : isSpecial
                       ? 'rgba(255,255,255,0.12)'
                       : 'rgba(255,255,255,0.08)',
@@ -220,7 +231,7 @@ export default function MathKeyboard({ onInput, onClose }: MathKeyboardProps) {
                     justifyContent: 'center',
                     minHeight: '42px',
                     transition: 'all 0.1s ease',
-                    boxShadow: isShift && shift ? '0 0 0 2px #60a5fa' : 'none',
+                    boxShadow: isShift && shift ? '0 0 0 2px #60a5fa' : (isSuperscriptBtn && superscriptMode ? '0 0 0 2px #f97316' : 'none'),
                   }}
                 >
                   {displayKey}

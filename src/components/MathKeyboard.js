@@ -10,6 +10,12 @@ const TABS = [
 const SUPERSCRIPT_MAP = {
     '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴',
     '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',
+    '-': '⁻', '+': '⁺', '=': '⁼', '(': '⁽', ')': '⁾',
+    'a': 'ᵃ', 'b': 'ᵇ', 'c': 'ᶜ', 'd': 'ᵈ', 'e': 'ᵉ',
+    'f': 'ᶠ', 'g': 'ᵍ', 'h': 'ʰ', 'i': 'ⁱ', 'j': 'ʲ',
+    'k': 'ᵏ', 'l': 'ˡ', 'm': 'ᵐ', 'n': 'ⁿ', 'o': 'ᵒ',
+    'p': 'ᵖ', 'q': 'q', 'r': 'ʳ', 's': 'ˢ', 't': 'ᵗ',
+    'u': 'ᵘ', 'v': 'ᵛ', 'w': 'ʷ', 'x': 'ˣ', 'y': 'ʸ', 'z': 'ᶻ',
 };
 // Keys layout
 const KEYS = {
@@ -20,9 +26,9 @@ const KEYS = {
         ['⇧', '0', '.', '=', '+', '−', '←', '→', '↵'],
     ],
     'symbols': [
-        ['∞', '≠', '∈', '∉', '⊂', '⊃', '', '∩', ''],
+        ['∞', '≠', '∈', '∉', '', '', '∪', '', '∅'],
         ['≤', '≥', '≈', '≡', '∝', '∇', '∂', '∆', '∏'],
-        ['∑', '∫', '∮', '⊥', '∥', '∠', '∡', '⌫', ''],
+        ['∑', '∫', '∮', '⊥', '', '∠', '', '⌫', '↵'],
         ['123', '→', '←', '⇔', '⇒', '⇐', '∀', '∃', ''],
     ],
     'abc': [
@@ -68,13 +74,18 @@ export default function MathKeyboard({ onInput, onClose }) {
             onInput('²');
         }
         else if (key === 'xⁿ') {
-            // Enter superscript mode - next number will be superscript
-            setSuperscriptMode(true);
+            // Toggle superscript mode - ALL subsequent input becomes superscript
+            setSuperscriptMode(!superscriptMode);
         }
-        else if (superscriptMode && SUPERSCRIPT_MAP[key]) {
-            // Output superscript character
-            onInput(SUPERSCRIPT_MAP[key]);
-            setSuperscriptMode(false);
+        else if (superscriptMode) {
+            // In superscript mode - convert everything to superscript
+            if (SUPERSCRIPT_MAP[key]) {
+                onInput(SUPERSCRIPT_MAP[key]);
+            }
+            else {
+                // For characters without superscript, output as-is
+                onInput(key);
+            }
         }
         else {
             // Normal input
@@ -132,12 +143,13 @@ export default function MathKeyboard({ onInput, onClose }) {
                         }, children: "\u2715" })] }), superscriptMode && (_jsx("div", { style: {
                     textAlign: 'center',
                     padding: '4px',
-                    background: 'rgba(249,115,22,0.2)',
+                    background: 'rgba(249,115,22,0.3)',
                     borderRadius: '6px',
                     marginBottom: '4px',
                     fontSize: '12px',
                     color: '#fbbf24',
-                }, children: "\uFE0F Daraja rejimi: keyingi sonni kiriting" })), _jsx("div", { style: { display: 'flex', flexDirection: 'column', gap: '4px' }, children: KEYS[activeTab].map((row, rowIdx) => (_jsx("div", { style: { display: 'flex', gap: '3px' }, children: row.map((key, keyIdx) => {
+                    fontWeight: 'bold',
+                }, children: "\u26A1 Daraja rejimi: barcha belgilar darajaga yoziladi" })), _jsx("div", { style: { display: 'flex', flexDirection: 'column', gap: '4px' }, children: KEYS[activeTab].map((row, rowIdx) => (_jsx("div", { style: { display: 'flex', gap: '3px' }, children: row.map((key, keyIdx) => {
                         const isSpecial = ['⌫', '↵', '⇧', '123', 'abc', 'αβγ', '∞≠∈'].includes(key);
                         const isWide = key === '⇧' || key === '123' || key === 'abc' || key === 'αβγ' || key === '∞≠∈';
                         const isBackspace = key === '⌫';
@@ -159,7 +171,7 @@ export default function MathKeyboard({ onInput, onClose }) {
                                     : isEnter
                                         ? 'rgba(16,185,129,0.25)'
                                         : isSuperscriptBtn && superscriptMode
-                                            ? 'rgba(249,115,22,0.4)'
+                                            ? 'rgba(249,115,22,0.5)'
                                             : isSpecial
                                                 ? 'rgba(255,255,255,0.12)'
                                                 : 'rgba(255,255,255,0.08)',
@@ -178,7 +190,7 @@ export default function MathKeyboard({ onInput, onClose }) {
                                 justifyContent: 'center',
                                 minHeight: '42px',
                                 transition: 'all 0.1s ease',
-                                boxShadow: isShift && shift ? '0 0 0 2px #60a5fa' : 'none',
+                                boxShadow: isShift && shift ? '0 0 0 2px #60a5fa' : (isSuperscriptBtn && superscriptMode ? '0 0 0 2px #f97316' : 'none'),
                             }, children: displayKey }, `${rowIdx}-${keyIdx}`));
                     }) }, rowIdx))) })] }));
 }
