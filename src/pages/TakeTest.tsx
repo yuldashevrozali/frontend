@@ -64,16 +64,9 @@ export default function TakeTest() {
     setLoading(true);
     setError('');
     try {
-      const res = await API.post(`/tests/${testCode}/submit`, { answers });
-      setResult({
-        score: res.data.score,
-        total: res.data.total,
-        rawScore: res.data.rawScore,
-        scaledScore: res.data.scaledScore,
-        percentage: res.data.percentage,
-        grade: res.data.grade,
-        isCertified: res.data.isCertified,
-      });
+      await API.post(`/tests/${testCode}/submit`, { answers });
+      // Natijani ko'rsatmaslik — faqat kutish xabari
+      setResult({ waiting: true });
     } catch (e: any) {
       setError(e.response?.data?.error || 'Xatolik yuz berdi');
     } finally {
@@ -83,6 +76,56 @@ export default function TakeTest() {
 
   // Natija sahifasi
   if (result) {
+    if (result.waiting) {
+      return (
+        <div style={{ padding: '20px', paddingBottom: '120px' }}>
+          <div style={{
+            background: 'rgba(255,255,255,0.08)',
+            backdropFilter: 'blur(20px)',
+            borderRadius: '24px',
+            padding: '32px 20px',
+            textAlign: 'center',
+            marginBottom: '20px',
+            border: '1px solid rgba(255,255,255,0.12)',
+          }}>
+            <div style={{ fontSize: '64px', marginBottom: '16px' }}>⏳</div>
+            <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '8px' }}>Javoblar qabul qilindi!</h2>
+            <p style={{ opacity: 0.7, marginBottom: '24px' }}>
+              Siz {Object.keys(answers).length} ta savolga javob berdingiz
+            </p>
+            <div style={{
+              background: 'rgba(255,255,255,0.1)',
+              borderRadius: '16px',
+              padding: '20px',
+              marginBottom: '24px',
+            }}>
+              <p style={{ opacity: 0.6, marginBottom: '8px' }}>📌 Natijalar</p>
+              <p style={{ fontSize: '16px', opacity: 0.8 }}>
+                Test egasi kamida 5 kishi ishlashini kutmoqda.<br/>
+                Yakunlangandan keyin natijangiz bot orqali yuboriladi.
+              </p>
+            </div>
+            <button
+              onClick={() => navigate('/')}
+              style={{
+                width: '100%',
+                padding: '16px',
+                background: 'linear-gradient(135deg, #3b82f6, #6366f1)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '14px',
+                fontSize: '16px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+              }}
+            >
+              🏠 Bosh sahifaga qaytish
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div style={{ padding: '20px', paddingBottom: '120px' }}>
         <div style={{

@@ -63,16 +63,9 @@ export default function TakeTest() {
         setLoading(true);
         setError('');
         try {
-            const res = await API.post(`/tests/${testCode}/submit`, { answers });
-            setResult({
-                score: res.data.score,
-                total: res.data.total,
-                rawScore: res.data.rawScore,
-                scaledScore: res.data.scaledScore,
-                percentage: res.data.percentage,
-                grade: res.data.grade,
-                isCertified: res.data.isCertified,
-            });
+            await API.post(`/tests/${testCode}/submit`, { answers });
+            // Natijani ko'rsatmaslik — faqat kutish xabari
+            setResult({ waiting: true });
         }
         catch (e) {
             setError(e.response?.data?.error || 'Xatolik yuz berdi');
@@ -83,6 +76,32 @@ export default function TakeTest() {
     };
     // Natija sahifasi
     if (result) {
+        if (result.waiting) {
+            return (_jsx("div", { style: { padding: '20px', paddingBottom: '120px' }, children: _jsxs("div", { style: {
+                        background: 'rgba(255,255,255,0.08)',
+                        backdropFilter: 'blur(20px)',
+                        borderRadius: '24px',
+                        padding: '32px 20px',
+                        textAlign: 'center',
+                        marginBottom: '20px',
+                        border: '1px solid rgba(255,255,255,0.12)',
+                    }, children: [_jsx("div", { style: { fontSize: '64px', marginBottom: '16px' }, children: "\u23F3" }), _jsx("h2", { style: { fontSize: '24px', fontWeight: 'bold', marginBottom: '8px' }, children: "Javoblar qabul qilindi!" }), _jsxs("p", { style: { opacity: 0.7, marginBottom: '24px' }, children: ["Siz ", Object.keys(answers).length, " ta savolga javob berdingiz"] }), _jsxs("div", { style: {
+                                background: 'rgba(255,255,255,0.1)',
+                                borderRadius: '16px',
+                                padding: '20px',
+                                marginBottom: '24px',
+                            }, children: [_jsx("p", { style: { opacity: 0.6, marginBottom: '8px' }, children: "\uD83D\uDCCC Natijalar" }), _jsxs("p", { style: { fontSize: '16px', opacity: 0.8 }, children: ["Test egasi kamida 5 kishi ishlashini kutmoqda.", _jsx("br", {}), "Yakunlangandan keyin natijangiz bot orqali yuboriladi."] })] }), _jsx("button", { onClick: () => navigate('/'), style: {
+                                width: '100%',
+                                padding: '16px',
+                                background: 'linear-gradient(135deg, #3b82f6, #6366f1)',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '14px',
+                                fontSize: '16px',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                            }, children: "\uD83C\uDFE0 Bosh sahifaga qaytish" })] }) }));
+        }
         return (_jsx("div", { style: { padding: '20px', paddingBottom: '120px' }, children: _jsxs("div", { style: {
                     background: 'rgba(255,255,255,0.08)',
                     backdropFilter: 'blur(20px)',
