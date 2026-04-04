@@ -6,18 +6,23 @@ const TABS = [
     { key: 'abc', label: 'abc' },
     { key: 'αβγ', label: 'αβγ' },
 ];
-// Keys layout matching the image exactly
+// Superscript mapping
+const SUPERSCRIPT_MAP = {
+    '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴',
+    '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',
+};
+// Keys layout
 const KEYS = {
     '123': [
         ['x', 'n', '7', '8', '9', '÷', 'e', 'i', 'π'],
-        ['<', '>', '4', '5', '6', '×', 'x²', 'x□', '√'],
+        ['<', '>', '4', '5', '6', '×', 'x²', 'xⁿ', '√'],
         ['(', ')', '1', '2', '3', '−', '∞', '□', '∀', '⌫'],
         ['⇧', '0', '.', '=', '+', '−', '←', '→', '↵'],
     ],
     'symbols': [
-        ['∞', '≠', '∈', '∉', '⊂', '⊃', '∪', '∩', '∅'],
+        ['∞', '≠', '∈', '∉', '⊂', '⊃', '', '∩', ''],
         ['≤', '≥', '≈', '≡', '∝', '∇', '∂', '∆', '∏'],
-        ['∑', '∫', '∮', '⊥', '∥', '∠', '∡', '⌫', '↵'],
+        ['∑', '∫', '∮', '⊥', '∥', '∠', '∡', '⌫', ''],
         ['123', '→', '←', '⇔', '⇒', '⇐', '∀', '∃', ''],
     ],
     'abc': [
@@ -36,6 +41,7 @@ const KEYS = {
 export default function MathKeyboard({ onInput, onClose }) {
     const [activeTab, setActiveTab] = useState('123');
     const [shift, setShift] = useState(false);
+    const [superscriptMode, setSuperscriptMode] = useState(false);
     const handleKey = (key) => {
         if (key === '⌫') {
             onInput('backspace');
@@ -61,14 +67,33 @@ export default function MathKeyboard({ onInput, onClose }) {
         else if (key === 'x²') {
             onInput('²');
         }
-        else if (key === 'x□') {
-            onInput('^');
+        else if (key === 'xⁿ') {
+            // Enter superscript mode - next number will be superscript
+            setSuperscriptMode(true);
+        }
+        else if (superscriptMode && SUPERSCRIPT_MAP[key]) {
+            // Output superscript character
+            onInput(SUPERSCRIPT_MAP[key]);
+            setSuperscriptMode(false);
         }
         else {
-            onInput(shift ? key.toUpperCase() : key);
-            if (shift && key.length === 1 && /[a-zA-Z]/.test(key))
+            // Normal input
+            const outputKey = shift && key.length === 1 && /[a-zA-Z]/.test(key)
+                ? key.toUpperCase()
+                : key;
+            onInput(outputKey);
+            // Auto-reset shift after typing a letter
+            if (shift && key.length === 1 && /[a-zA-Z]/.test(key)) {
                 setShift(false);
+            }
         }
+    };
+    // Get display key (uppercase if shift is active on abc tab)
+    const getDisplayKey = (key) => {
+        if (activeTab === 'abc' && shift && key.length === 1 && /[a-z]/.test(key)) {
+            return key.toUpperCase();
+        }
+        return key;
     };
     return (_jsxs("div", { style: {
             position: 'fixed',
@@ -104,15 +129,26 @@ export default function MathKeyboard({ onInput, onClose }) {
                             color: '#fca5a5',
                             fontSize: '14px',
                             cursor: 'pointer',
-                        }, children: "\u2715" })] }), _jsx("div", { style: { display: 'flex', flexDirection: 'column', gap: '4px' }, children: KEYS[activeTab].map((row, rowIdx) => (_jsx("div", { style: { display: 'flex', gap: '3px' }, children: row.map((key, keyIdx) => {
+                        }, children: "\u2715" })] }), superscriptMode && (_jsx("div", { style: {
+                    textAlign: 'center',
+                    padding: '4px',
+                    background: 'rgba(249,115,22,0.2)',
+                    borderRadius: '6px',
+                    marginBottom: '4px',
+                    fontSize: '12px',
+                    color: '#fbbf24',
+                }, children: "\uFE0F Daraja rejimi: keyingi sonni kiriting" })), _jsx("div", { style: { display: 'flex', flexDirection: 'column', gap: '4px' }, children: KEYS[activeTab].map((row, rowIdx) => (_jsx("div", { style: { display: 'flex', gap: '3px' }, children: row.map((key, keyIdx) => {
                         const isSpecial = ['⌫', '↵', '⇧', '123', 'abc', 'αβγ', '∞≠∈'].includes(key);
                         const isWide = key === '⇧' || key === '123' || key === 'abc' || key === 'αβγ' || key === '∞≠∈';
                         const isBackspace = key === '⌫';
                         const isEnter = key === '↵';
                         const isEmpty = key === '';
+                        const isShift = key === '⇧';
+                        const isSuperscriptBtn = key === 'xⁿ';
                         if (isEmpty) {
                             return _jsx("div", { style: { flex: 1 } }, `${rowIdx}-${keyIdx}`);
                         }
+                        const displayKey = getDisplayKey(key);
                         return (_jsx("button", { onClick: () => handleKey(key), style: {
                                 flex: isWide ? 1.3 : 1,
                                 padding: isSpecial ? '10px 4px' : '12px 2px',
@@ -122,14 +158,18 @@ export default function MathKeyboard({ onInput, onClose }) {
                                     ? 'rgba(239,68,68,0.25)'
                                     : isEnter
                                         ? 'rgba(16,185,129,0.25)'
-                                        : isSpecial
-                                            ? 'rgba(255,255,255,0.12)'
-                                            : 'rgba(255,255,255,0.08)',
+                                        : isSuperscriptBtn && superscriptMode
+                                            ? 'rgba(249,115,22,0.4)'
+                                            : isSpecial
+                                                ? 'rgba(255,255,255,0.12)'
+                                                : 'rgba(255,255,255,0.08)',
                                 color: isBackspace
                                     ? '#fca5a5'
                                     : isEnter
                                         ? '#6ee7b7'
-                                        : 'white',
+                                        : isShift && shift
+                                            ? '#60a5fa'
+                                            : 'white',
                                 fontSize: key.length > 2 ? '10px' : key.length > 1 ? '12px' : '15px',
                                 fontWeight: '600',
                                 cursor: 'pointer',
@@ -138,7 +178,8 @@ export default function MathKeyboard({ onInput, onClose }) {
                                 justifyContent: 'center',
                                 minHeight: '42px',
                                 transition: 'all 0.1s ease',
-                            }, children: key }, `${rowIdx}-${keyIdx}`));
+                                boxShadow: isShift && shift ? '0 0 0 2px #60a5fa' : 'none',
+                            }, children: displayKey }, `${rowIdx}-${keyIdx}`));
                     }) }, rowIdx))) })] }));
 }
 //# sourceMappingURL=MathKeyboard.js.map
