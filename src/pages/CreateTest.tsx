@@ -35,12 +35,19 @@ export default function CreateTest() {
     setShowKeyboard(true);
   };
 
-  const requiredKeys = Array.from({ length: 35 }, (_, i) => String(i + 1));
-  const allRequiredFilled = requiredKeys.every(k => answerKeys[k]);
+  // Barcha 55 ta savol kalitlari: 1-35 + 36.1, 36.2, ..., 45.1, 45.2
+  const allKeys = [
+    ...Array.from({ length: 35 }, (_, i) => String(i + 1)),
+    ...Array.from({ length: 10 }, (_, i) => `${i + 36}.1`),
+    ...Array.from({ length: 10 }, (_, i) => `${i + 36}.2`),
+  ];
+  const allRequiredFilled = allKeys.every(k => answerKeys[k]);
+  const filledCount = allKeys.filter(k => answerKeys[k]).length;
 
   const handleSubmit = async () => {
     if (!allRequiredFilled) {
-      setError('1 dan 35 gacha barcha javoblarni kiriting!');
+      const missing = allKeys.filter(k => !answerKeys[k]);
+      setError(`Iltimos, barcha 55 ta javobni kiriting! Hozir: ${filledCount}/55. Yetishmayotgan: ${missing.slice(0, 5).join(', ')}${missing.length > 5 ? '...' : ''}`);
       return;
     }
     setLoading(true);

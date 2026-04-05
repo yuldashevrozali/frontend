@@ -59,8 +59,22 @@ export default function TakeTest() {
     }
   };
 
+  // Barcha 55 ta savol kalitlari
+  const allKeys = [
+    ...Array.from({ length: 35 }, (_, i) => String(i + 1)),
+    ...Array.from({ length: 10 }, (_, i) => `${i + 36}.1`),
+    ...Array.from({ length: 10 }, (_, i) => `${i + 36}.2`),
+  ];
+  const allAnswersFilled = allKeys.every(k => answers[k]);
+  const filledCount = allKeys.filter(k => answers[k]).length;
+
   // Testni yakunlash va natijani olish
   const submitTest = async () => {
+    if (!allAnswersFilled) {
+      const missing = allKeys.filter(k => !answers[k]);
+      setError(`Iltimos, barcha 55 ta javobni kiriting! Hozir: ${filledCount}/55. Yetishmayotgan: ${missing.slice(0, 5).join(', ')}${missing.length > 5 ? '...' : ''}`);
+      return;
+    }
     setLoading(true);
     setError('');
     try {
