@@ -12,14 +12,27 @@ export default function Profile() {
 
   const fetchData = async () => {
     try {
-      const [userRes, resultsRes, testsRes] = await Promise.all([
-        API.get('/me'),
-        API.get('/results'),
-        API.get('/my-created-tests'),
-      ]);
+      // Fetch user
+      const userRes = await API.get('/me');
       setUser(userRes.data);
-      setResults(resultsRes.data);
-      setCreatedTests(testsRes.data);
+
+      // Fetch results (optional)
+      try {
+        const resultsRes = await API.get('/results');
+        setResults(resultsRes.data);
+      } catch (err) {
+        console.error('Results fetch error:', err);
+        setResults([]);
+      }
+
+      // Fetch created tests (optional)
+      try {
+        const testsRes = await API.get('/my-created-tests');
+        setCreatedTests(testsRes.data);
+      } catch (err) {
+        console.error('Created tests fetch error:', err);
+        setCreatedTests([]);
+      }
     } catch (err) {
       console.error('Profile fetch error:', err);
       setError('Server bilan bog\'lanib bo\'lmadi. Iltimos, keyinroq urinib ko\'ring.');
