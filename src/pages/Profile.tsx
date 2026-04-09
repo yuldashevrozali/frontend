@@ -6,25 +6,29 @@ export default function Profile() {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [results, setResults] = useState<any[]>([]);
+  const [createdTests, setCreatedTests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchData = async () => {
+    try {
+      const [userRes, resultsRes, testsRes] = await Promise.all([
+        API.get('/me'),
+        API.get('/results'),
+        API.get('/my-created-tests'),
+      ]);
+      setUser(userRes.data);
+      setResults(resultsRes.data);
+      setCreatedTests(testsRes.data);
+    } catch (err) {
+      console.error('Profile fetch error:', err);
+      setError('Server bilan bog\'lanib bo\'lmadi. Iltimos, keyinroq urinib ko\'ring.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [userRes, resultsRes] = await Promise.all([
-          API.get('/me'),
-          API.get('/results'),
-        ]);
-        setUser(userRes.data);
-        setResults(resultsRes.data);
-      } catch (err) {
-        console.error('Profile fetch error:', err);
-        setError('Server bilan bog\'lanib bo\'lmadi. Iltimos, keyinroq urinib ko\'ring.');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
   }, [navigate]);
 
@@ -161,6 +165,81 @@ export default function Profile() {
           </div>
         ))}
       </div>
+
+      {/* Created Tests */}
+      {createdTests.length > 0 && (
+        <>
+          <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>📝 Yaratgan Testlarim</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+            {createdTests.map((test) => (
+              <div key={test.testCode} style={{
+                background: 'rgba(255,255,255,0.08)',
+                backdropFilter: 'blur(20px)',
+                borderRadius: '16px',
+                padding: '16px',
+                border: '1px solid rgba(255,255,255,0.12)',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{
+                      width: '48px', height: '48px',
+                      borderRadius: '14px',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '20px', fontWeight: 'bold',
+                      background: 'rgba(59,130,246,0.3)',
+                      color: '#93c5fd',
+                    }}>
+                      #{test.testCode}
+                    </div>
+                    <div>
+                      <p style={{ fontWeight: 'bold', fontSize: '16px' }}>{test.title}</p>
+                      <p style={{ opacity: 0.5, fontSize: '12px' }}>
+                        {new Date(test.createdAt).toLocaleDateString('uz-UZ')}
+                      </p>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <p style={{ fontWeight: 'bold', fontSize: '20px', color: '#60a5fa' }}>{test.participantCount}</p>
+                    <p style={{ opacity: 0.5, fontSize: '12px' }}>ishtirokchi</p>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    <span style={{ fontSize: '13px', opacity: 0.6 }}>⏳ Faol</span>
+                  </div>
+                  {test.participantCount >= 5 && (
+                    <button
+                      onClick={async () => {
+                        if (window.confirm(`Test #${test.testCode} ni yakunlashni xohlaysizmi? Bu amalni qaytarib bo'lmaydi.`)) {
+                          try {
+                            await API.post(`/tests/${test.testCode}/finalize`, { adminTelegramId: user.telegramId });
+                            alert('Test muvaffaqiyatli yakunlandi!');
+                            fetchData(); // Refresh
+                          } catch (err: any) {
+                            alert('Xatolik: ' + (err.response?.data?.error || err.message));
+                          }
+                        }
+                      }}
+                      style={{
+                        background: 'rgba(16,185,129,0.2)',
+                        color: '#6ee7b7',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '8px 16px',
+                        fontSize: '14px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      ✅ Yakunlash
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Results */}
       <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>📊 Natijalar</h3>
