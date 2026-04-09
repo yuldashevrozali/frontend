@@ -131,7 +131,7 @@ export default function MathKeyboard({ onInput, onClose }: MathKeyboardProps) {
         
         // Handle superscript conversion in superscript fraction mode
         if (fractionMode === 'superscript' && SUPERSCRIPT_MAP[char]) {
-          char = SUPERSCRIPT_MAP[char];
+          char = SUPERSCRIPT_MAP[char]!;
         }
         
         if (fractionPart === 'numerator') {
@@ -432,7 +432,7 @@ export default function MathKeyboard({ onInput, onClose }: MathKeyboardProps) {
                 <button
                   key={`${rowIdx}-${keyIdx}`}
                   onClick={() => handleKey(key)}
-                  disabled={fractionMode && isFractionBtn}
+                  disabled={!!fractionMode && isFractionBtn}
                   style={{
                     flex: isWide ? 1.3 : 1,
                     padding: isSpecial ? '10px 4px' : '12px 2px',
