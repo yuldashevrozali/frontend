@@ -59,20 +59,23 @@ export default function TakeTest() {
     }
   };
 
-  // Barcha 55 ta savol kalitlari
-  const allKeys = [
-    ...Array.from({ length: 35 }, (_, i) => String(i + 1)),
-    ...Array.from({ length: 10 }, (_, i) => `${i + 36}.1`),
-    ...Array.from({ length: 10 }, (_, i) => `${i + 36}.2`),
-  ];
+  // Savol kalitlari
+  const allKeys = testInfo?.testType === 'simple'
+    ? Array.from({ length: testInfo.questionCount }, (_, i) => String(i + 1))
+    : [
+        ...Array.from({ length: 35 }, (_, i) => String(i + 1)),
+        ...Array.from({ length: 10 }, (_, i) => `${i + 36}.1`),
+        ...Array.from({ length: 10 }, (_, i) => `${i + 36}.2`),
+      ];
   const allAnswersFilled = allKeys.every(k => answers[k]);
   const filledCount = allKeys.filter(k => answers[k]).length;
 
   // Testni yakunlash va natijani olish
   const submitTest = async () => {
     if (!allAnswersFilled) {
+      const total = testInfo?.testType === 'simple' ? testInfo.questionCount : 55;
       const missing = allKeys.filter(k => !answers[k]);
-      setError(`Iltimos, barcha 55 ta javobni kiriting! Hozir: ${filledCount}/55. Yetishmayotgan: ${missing.slice(0, 5).join(', ')}${missing.length > 5 ? '...' : ''}`);
+      setError(`Iltimos, barcha ${total} ta javobni kiriting! Hozir: ${filledCount}/${total}. Yetishmayotgan: ${missing.slice(0, 5).join(', ')}${missing.length > 5 ? '...' : ''}`);
       return;
     }
     setLoading(true);
@@ -353,19 +356,25 @@ export default function TakeTest() {
   }
 
   // Test sahifasi - barcha savollar bir vaqtda
-  // Savollarni generatsiya qilish (1-45, 36-45 uchun 2 ta)
-  const allQuestions = [];
-  for (let i = 1; i <= 45; i++) {
-    if (i >= 36 && i <= 45) {
-      allQuestions.push({ num: i, part: '1', key: `${i}.1` });
-      allQuestions.push({ num: i, part: '2', key: `${i}.2` });
-    } else {
-      allQuestions.push({ num: i, part: null, key: String(i) });
+  // Savollarni generatsiya qilish
+  const allQuestions: { num: number; part: string | null; key: string }[] = [];
+  if (testInfo?.testType === 'simple') {
+    for (let i = 0; i < testInfo.questionCount; i++) {
+      allQuestions.push({ num: i + 1, part: null, key: String(i + 1) });
+    }
+  } else if (testInfo?.testType === 'rasch') {
+    for (let i = 1; i <= 45; i++) {
+      if (i >= 36 && i <= 45) {
+        allQuestions.push({ num: i, part: '1', key: `${i}.1` });
+        allQuestions.push({ num: i, part: '2', key: `${i}.2` });
+      } else {
+        allQuestions.push({ num: i, part: null, key: String(i) });
+      }
     }
   }
 
   const answeredCount = Object.keys(answers).length;
-  const totalCount = allQuestions.length; // 55
+  const totalCount = allQuestions.length;
 
   return (
     <div style={{ padding: '16px', paddingBottom: showKeyboard ? '320px' : '120px' }}>
@@ -426,196 +435,258 @@ export default function TakeTest() {
         </div>
       )}
 
-      {/* 1-32: A/B/C/D */}
-      <div style={{
-        background: 'rgba(255,255,255,0.08)',
-        backdropFilter: 'blur(20px)',
-        borderRadius: '20px',
-        padding: '20px',
-        marginBottom: '20px',
-        border: '1px solid rgba(255,255,255,0.12)',
-      }}>
-        <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{
-            width: '36px', height: '36px',
-            background: 'rgba(59,130,246,0.3)',
-            borderRadius: '10px',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '14px',
-          }}>1-32</span>
-          Savollar (A/B/C/D)
-        </h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {allQuestions.filter(q => q.num <= 32).map(q => (
-            <div key={q.key} style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              background: 'rgba(255,255,255,0.08)',
-              borderRadius: '14px',
-              padding: '12px',
-            }}>
-              <span style={{ opacity: 0.6, width: '32px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }}>{q.num}</span>
-              <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
-                {OPTIONS_4.map(opt => (
-                  <button
-                    key={opt}
-                    onClick={() => setAnswer(q.key, opt)}
-                    style={{
-                      flex: 1,
-                      padding: '14px 8px',
-                      borderRadius: '12px',
-                      fontWeight: 'bold',
-                      fontSize: '16px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      background: answers[q.key] === opt
-                        ? 'linear-gradient(135deg, #3b82f6, #6366f1)'
-                        : 'rgba(255,255,255,0.1)',
-                      color: answers[q.key] === opt ? 'white' : 'rgba(255,255,255,0.6)',
-                      transform: answers[q.key] === opt ? 'scale(1.05)' : 'scale(1)',
-                      transition: 'all 0.2s ease',
-                    }}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 33-35: A-F */}
-      <div style={{
-        background: 'rgba(255,255,255,0.08)',
-        backdropFilter: 'blur(20px)',
-        borderRadius: '20px',
-        padding: '20px',
-        marginBottom: '20px',
-        border: '1px solid rgba(255,255,255,0.12)',
-      }}>
-        <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{
-            width: '36px', height: '36px',
-            background: 'rgba(168,85,247,0.3)',
-            borderRadius: '10px',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '14px',
-          }}>33-35</span>
-          Savollar (A-F)
-        </h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {allQuestions.filter(q => q.num >= 33 && q.num <= 35).map(q => (
-            <div key={q.key} style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              background: 'rgba(255,255,255,0.08)',
-              borderRadius: '14px',
-              padding: '12px',
-            }}>
-              <span style={{ opacity: 0.6, width: '32px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }}>{q.num}</span>
-              <div style={{ display: 'flex', gap: '8px', flex: 1, flexWrap: 'wrap' }}>
-                {OPTIONS_6.map(opt => (
-                  <button
-                    key={opt}
-                    onClick={() => setAnswer(q.key, opt)}
-                    style={{
-                      flex: 1,
-                      minWidth: '44px',
-                      padding: '14px 8px',
-                      borderRadius: '12px',
-                      fontWeight: 'bold',
-                      fontSize: '16px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      background: answers[q.key] === opt
-                        ? 'linear-gradient(135deg, #a855f7, #9333ea)'
-                        : 'rgba(255,255,255,0.1)',
-                      color: answers[q.key] === opt ? 'white' : 'rgba(255,255,255,0.6)',
-                      transform: answers[q.key] === opt ? 'scale(1.05)' : 'scale(1)',
-                      transition: 'all 0.2s ease',
-                    }}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 36-45: 2 ta javob */}
-      <div style={{
-        background: 'rgba(255,255,255,0.08)',
-        backdropFilter: 'blur(20px)',
-        borderRadius: '20px',
-        padding: '20px',
-        marginBottom: '20px',
-        border: '1px solid rgba(255,255,255,0.12)',
-      }}>
-        <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{
-            width: '36px', height: '36px',
-            background: 'rgba(249,115,22,0.3)',
-            borderRadius: '10px',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '14px',
-          }}>36-45</span>
-          Savollar (2 ta javob)
-        </h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {allQuestions.filter(q => q.num >= 36 && q.num <= 45).reduce((acc: any[], q) => {
-            const existing = acc.find(a => a.num === q.num);
-            if (existing) {
-              existing.parts.push(q);
-            } else {
-              acc.push({ num: q.num, parts: [q] });
-            }
-            return acc;
-          }, [] as any[]).map((group: any) => (
-            <div key={group.num} style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              background: 'rgba(255,255,255,0.08)',
-              borderRadius: '14px',
-              padding: '12px',
-            }}>
-              <span style={{ opacity: 0.6, width: '40px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }}>{group.num}</span>
-              <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
-                {group.parts.map((q: any) => (
-                  <div key={q.key} style={{ display: 'flex', flex: 1, gap: '4px' }}>
+      {testInfo?.testType === 'simple' ? (
+        // Simple test questions
+        <div style={{
+          background: 'rgba(255,255,255,0.08)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '20px',
+          padding: '20px',
+          marginBottom: '20px',
+          border: '1px solid rgba(255,255,255,0.12)',
+        }}>
+          <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>
+            Savollar (A/B/C/D)
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {allQuestions.map(q => (
+              <div key={q.key} style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                background: 'rgba(255,255,255,0.08)',
+                borderRadius: '14px',
+                padding: '12px',
+              }}>
+                <span style={{ opacity: 0.6, width: '32px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }}>{q.num}</span>
+                <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
+                  {OPTIONS_4.map(opt => (
                     <button
-                      onClick={() => { setActiveInput(q.key); setShowKeyboard(true); }}
+                      key={opt}
+                      onClick={() => setAnswer(q.key, opt)}
                       style={{
                         flex: 1,
-                        padding: '14px 10px',
-                        background: activeInput === q.key ? 'rgba(249,115,22,0.3)' : 'rgba(255,255,255,0.15)',
+                        padding: '14px 8px',
                         borderRadius: '12px',
-                        color: answers[q.key] ? 'white' : 'rgba(255,255,255,0.4)',
-                        textAlign: 'center',
                         fontWeight: 'bold',
                         fontSize: '16px',
-                        border: activeInput === q.key ? '2px solid #f97316' : '2px solid transparent',
+                        border: 'none',
                         cursor: 'pointer',
-                        minHeight: '52px',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
+                        background: answers[q.key] === opt
+                          ? 'linear-gradient(135deg, #10b981, #059669)'
+                          : 'rgba(255,255,255,0.1)',
+                        color: answers[q.key] === opt ? 'white' : 'rgba(255,255,255,0.6)',
+                        transform: answers[q.key] === opt ? 'scale(1.05)' : 'scale(1)',
+                        transition: 'all 0.2s ease',
                       }}
                     >
-                      {answers[q.key] || q.part}
+                      {opt}
                     </button>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <>
+          {/* 1-32: A/B/C/D */}
+          <div style={{
+            background: 'rgba(255,255,255,0.08)',
+            backdropFilter: 'blur(20px)',
+            borderRadius: '20px',
+            padding: '20px',
+            marginBottom: '20px',
+            border: '1px solid rgba(255,255,255,0.12)',
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{
+                width: '36px', height: '36px',
+                background: 'rgba(59,130,246,0.3)',
+                borderRadius: '10px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '14px',
+              }}>1-32</span>
+              Savollar (A/B/C/D)
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {allQuestions.filter(q => q.num <= 32).map(q => (
+                <div key={q.key} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  background: 'rgba(255,255,255,0.08)',
+                  borderRadius: '14px',
+                  padding: '12px',
+                }}>
+                  <span style={{ opacity: 0.6, width: '32px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }}>{q.num}</span>
+                  <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
+                    {OPTIONS_4.map(opt => (
+                      <button
+                        key={opt}
+                        onClick={() => setAnswer(q.key, opt)}
+                        style={{
+                          flex: 1,
+                          padding: '14px 8px',
+                          borderRadius: '12px',
+                          fontWeight: 'bold',
+                          fontSize: '16px',
+                          border: 'none',
+                          cursor: 'pointer',
+                          background: answers[q.key] === opt
+                            ? 'linear-gradient(135deg, #3b82f6, #6366f1)'
+                            : 'rgba(255,255,255,0.1)',
+                          color: answers[q.key] === opt ? 'white' : 'rgba(255,255,255,0.6)',
+                          transform: answers[q.key] === opt ? 'scale(1.05)' : 'scale(1)',
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 33-35: A-F */}
+          <div style={{
+            background: 'rgba(255,255,255,0.08)',
+            backdropFilter: 'blur(20px)',
+            borderRadius: '20px',
+            padding: '20px',
+            marginBottom: '20px',
+            border: '1px solid rgba(255,255,255,0.12)',
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{
+                width: '36px', height: '36px',
+                background: 'rgba(168,85,247,0.3)',
+                borderRadius: '10px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '14px',
+              }}>33-35</span>
+              Savollar (A-F)
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {allQuestions.filter(q => q.num >= 33 && q.num <= 35).map(q => (
+                <div key={q.key} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  background: 'rgba(255,255,255,0.08)',
+                  borderRadius: '14px',
+                  padding: '12px',
+                }}>
+                  <span style={{ opacity: 0.6, width: '32px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }}>{q.num}</span>
+                  <div style={{ display: 'flex', gap: '8px', flex: 1, flexWrap: 'wrap' }}>
+                    {OPTIONS_6.map(opt => (
+                      <button
+                        key={opt}
+                        onClick={() => setAnswer(q.key, opt)}
+                        style={{
+                          flex: 1,
+                          minWidth: '44px',
+                          padding: '14px 8px',
+                          borderRadius: '12px',
+                          fontWeight: 'bold',
+                          fontSize: '16px',
+                          border: 'none',
+                          cursor: 'pointer',
+                          background: answers[q.key] === opt
+                            ? 'linear-gradient(135deg, #a855f7, #9333ea)'
+                            : 'rgba(255,255,255,0.1)',
+                          color: answers[q.key] === opt ? 'white' : 'rgba(255,255,255,0.6)',
+                          transform: answers[q.key] === opt ? 'scale(1.05)' : 'scale(1)',
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 36-45: 2 ta javob */}
+          <div style={{
+            background: 'rgba(255,255,255,0.08)',
+            backdropFilter: 'blur(20px)',
+            borderRadius: '20px',
+            padding: '20px',
+            marginBottom: showKeyboard ? '320px' : '20px',
+            border: '1px solid rgba(255,255,255,0.12)',
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{
+                width: '36px', height: '36px',
+                background: 'rgba(249,115,22,0.3)',
+                borderRadius: '10px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '14px',
+              }}>36-45</span>
+              Savollar (2 ta javob)
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {allQuestions.filter(q => q.num >= 36 && q.num <= 45).reduce((acc: any[], q) => {
+                const existing = acc.find(a => a.num === q.num);
+                if (existing) {
+                  existing.parts.push(q);
+                } else {
+                  acc.push({ num: q.num, parts: [q] });
+                }
+                return acc;
+              }, [] as any[]).map((group: any) => (
+                <div key={group.num} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  background: 'rgba(255,255,255,0.08)',
+                  borderRadius: '14px',
+                  padding: '12px',
+                }}>
+                  <span style={{ opacity: 0.6, width: '40px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }}>{group.num}</span>
+                  <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
+                    {group.parts.map((q: any) => (
+                      <div key={q.key} style={{ display: 'flex', flex: 1, gap: '4px' }}>
+                        <button
+                          onClick={() => { setActiveInput(q.key); setShowKeyboard(true); }}
+                          style={{
+                            flex: 1,
+                            padding: '14px 10px',
+                            background: activeInput === q.key ? 'rgba(249,115,22,0.3)' : 'rgba(255,255,255,0.15)',
+                            borderRadius: '12px',
+                            color: answers[q.key] ? 'white' : 'rgba(255,255,255,0.4)',
+                            textAlign: 'center',
+                            fontWeight: 'bold',
+                            fontSize: '16px',
+                            border: activeInput === q.key ? '2px solid #f97316' : '2px solid transparent',
+                            cursor: 'pointer',
+                            minHeight: '52px',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {answers[q.key] || q.part}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Math Keyboard */}
+          {showKeyboard && (
+            <MathKeyboard onInput={handleKeyboardInput} onClose={() => { setShowKeyboard(false); setActiveInput(null); }} />
+          )}
+        </>
+      )}
 
       {/* Yuborish tugmasi */}
       <button
@@ -637,11 +708,6 @@ export default function TakeTest() {
       >
         {loading ? '⏳ Tekshirilmoqda...' : `✅ Natijani ko'rish (${answeredCount}/${totalCount})`}
       </button>
-
-      {/* Math Keyboard */}
-      {showKeyboard && (
-        <MathKeyboard onInput={handleKeyboardInput} onClose={() => { setShowKeyboard(false); setActiveInput(null); }} />
-      )}
     </div>
   );
 }
