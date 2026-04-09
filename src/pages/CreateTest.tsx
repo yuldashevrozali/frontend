@@ -8,6 +8,9 @@ const OPTIONS_6 = ['A', 'B', 'C', 'D', 'E', 'F'];
 
 export default function CreateTest() {
   const navigate = useNavigate();
+  const [step, setStep] = useState<'select_type' | 'enter_num' | 'create'>('select_type');
+  const [testType, setTestType] = useState<'rasch' | 'simple' | null>(null);
+  const [numQuestions, setNumQuestions] = useState<number>(0);
   const [answerKeys, setAnswerKeys] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -35,25 +38,28 @@ export default function CreateTest() {
     setShowKeyboard(true);
   };
 
-  // Barcha 55 ta savol kalitlari: 1-35 + 36.1, 36.2, ..., 45.1, 45.2
-  const allKeys = [
-    ...Array.from({ length: 35 }, (_, i) => String(i + 1)),
-    ...Array.from({ length: 10 }, (_, i) => `${i + 36}.1`),
-    ...Array.from({ length: 10 }, (_, i) => `${i + 36}.2`),
-  ];
+  // Savol kalitlari
+  const allKeys = testType === 'simple'
+    ? Array.from({ length: numQuestions }, (_, i) => String(i + 1))
+    : [
+        ...Array.from({ length: 35 }, (_, i) => String(i + 1)),
+        ...Array.from({ length: 10 }, (_, i) => `${i + 36}.1`),
+        ...Array.from({ length: 10 }, (_, i) => `${i + 36}.2`),
+      ];
   const allRequiredFilled = allKeys.every(k => answerKeys[k]);
   const filledCount = allKeys.filter(k => answerKeys[k]).length;
 
   const handleSubmit = async () => {
     if (!allRequiredFilled) {
+      const total = testType === 'simple' ? numQuestions : 55;
       const missing = allKeys.filter(k => !answerKeys[k]);
-      setError(`Iltimos, barcha 55 ta javobni kiriting! Hozir: ${filledCount}/55. Yetishmayotgan: ${missing.slice(0, 5).join(', ')}${missing.length > 5 ? '...' : ''}`);
+      setError(`Iltimos, barcha ${total} ta javobni kiriting! Hozir: ${filledCount}/${total}. Yetishmayotgan: ${missing.slice(0, 5).join(', ')}${missing.length > 5 ? '...' : ''}`);
       return;
     }
     setLoading(true);
     setError('');
     try {
-      const res = await API.post('/tests/create', { answerKeys });
+      const res = await API.post('/tests/create', { answerKeys, testType });
       if (window.Telegram?.WebApp) {
         window.Telegram.WebApp.sendData(JSON.stringify({
           action: 'test_created',
@@ -112,293 +118,460 @@ export default function CreateTest() {
             <p style={{ fontWeight: 'bold', fontSize: '16px' }}>{Object.keys(answerKeys).length} ta</p>
           </div>
         </div>
-        <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.15)', borderRadius: '3px' }}>
-          <div style={{
-            height: '100%',
-            width: `${(Object.keys(answerKeys).length / 55) * 100}%`,
-            background: 'linear-gradient(90deg, #10b981, #059669)',
-            borderRadius: '3px',
-            transition: 'width 0.3s ease',
-          }}></div>
-        </div>
+        {step === 'create' && (
+          <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.15)', borderRadius: '3px' }}>
+            <div style={{
+              height: '100%',
+              width: `${(Object.keys(answerKeys).length / allKeys.length) * 100}%`,
+              background: 'linear-gradient(90deg, #10b981, #059669)',
+              borderRadius: '3px',
+              transition: 'width 0.3s ease',
+            }}></div>
+          </div>
+        )}
       </div>
 
-      {error && (
+      {step === 'select_type' && (
         <div style={{
-          background: 'rgba(239,68,68,0.2)',
-          border: '1px solid rgba(239,68,68,0.3)',
-          borderRadius: '16px',
-          padding: '16px',
+          background: 'rgba(255,255,255,0.08)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '20px',
+          padding: '20px',
           marginBottom: '20px',
+          border: '1px solid rgba(255,255,255,0.12)',
         }}>
-          <p style={{ color: '#fca5a5', fontSize: '14px' }}>{error}</p>
+          <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>Test turini tanlang</h3>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button
+              onClick={() => { setTestType('rasch'); setStep('create'); }}
+              style={{
+                flex: 1,
+                padding: '18px',
+                background: 'linear-gradient(135deg, #3b82f6, #6366f1)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '16px',
+                fontSize: '16px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+              }}
+            >
+              📊 RASCH Model (55 savol)
+            </button>
+            <button
+              onClick={() => { setTestType('simple'); setStep('enter_num'); }}
+              style={{
+                flex: 1,
+                padding: '18px',
+                background: 'linear-gradient(135deg, #10b981, #059669)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '16px',
+                fontSize: '16px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+              }}
+            >
+              📝 Oddiy Test (1-60 savol)
+            </button>
+          </div>
         </div>
       )}
 
-      {/* 1-32 */}
-      <div style={{
-        background: 'rgba(255,255,255,0.08)',
-        backdropFilter: 'blur(20px)',
-        borderRadius: '20px',
-        padding: '20px',
-        marginBottom: '20px',
-        border: '1px solid rgba(255,255,255,0.12)',
-      }}>
-        <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{
-            width: '36px', height: '36px',
-            background: 'rgba(59,130,246,0.3)',
-            borderRadius: '10px',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '14px',
-          }}>1-32</span>
-          Savollar (A/B/C/D)
-        </h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {Array.from({ length: 32 }, (_, i) => i + 1).map(q => (
-            <div key={q} style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              background: 'rgba(255,255,255,0.08)',
-              borderRadius: '14px',
-              padding: '12px',
-            }}>
-              <span style={{ opacity: 0.6, width: '32px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }}>{q}</span>
-              <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
-                {OPTIONS_4.map(opt => (
-                  <button
-                    key={opt}
-                    onClick={() => setAnswer(String(q), opt)}
-                    style={{
-                      flex: 1,
-                      padding: '14px 8px',
-                      borderRadius: '12px',
-                      fontWeight: 'bold',
-                      fontSize: '16px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      background: answerKeys[String(q)] === opt
-                        ? 'linear-gradient(135deg, #3b82f6, #6366f1)'
-                        : 'rgba(255,255,255,0.1)',
-                      color: answerKeys[String(q)] === opt ? 'white' : 'rgba(255,255,255,0.6)',
-                      transform: answerKeys[String(q)] === opt ? 'scale(1.05)' : 'scale(1)',
-                    }}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
+      {step === 'enter_num' && (
+        <div style={{
+          background: 'rgba(255,255,255,0.08)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '20px',
+          padding: '20px',
+          marginBottom: '20px',
+          border: '1px solid rgba(255,255,255,0.12)',
+        }}>
+          <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>Savollar sonini kiriting (1-60)</h3>
+          <input
+            type="number"
+            min="1"
+            max="60"
+            value={numQuestions}
+            onChange={(e) => {
+              const val = parseInt(e.target.value);
+              if (val > 60) {
+                setError('Maksimal 60 ta savol yarat olasiz');
+                setNumQuestions(60);
+              } else if (val < 1) {
+                setNumQuestions(1);
+              } else {
+                setNumQuestions(val);
+                setError('');
+              }
+            }}
+            style={{
+              width: '100%',
+              padding: '14px',
+              background: 'rgba(255,255,255,0.15)',
+              border: 'none',
+              borderRadius: '12px',
+              color: 'white',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              textAlign: 'center',
+            }}
+          />
+          <button
+            onClick={() => { if (numQuestions >= 1 && numQuestions <= 60) setStep('create'); }}
+            style={{
+              width: '100%',
+              marginTop: '16px',
+              padding: '14px',
+              background: 'linear-gradient(135deg, #10b981, #059669)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '12px',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+            }}
+          >
+            Davom etish
+          </button>
         </div>
-      </div>
-
-      {/* 33-35 */}
-      <div style={{
-        background: 'rgba(255,255,255,0.08)',
-        backdropFilter: 'blur(20px)',
-        borderRadius: '20px',
-        padding: '20px',
-        marginBottom: '20px',
-        border: '1px solid rgba(255,255,255,0.12)',
-      }}>
-        <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{
-            width: '36px', height: '36px',
-            background: 'rgba(168,85,247,0.3)',
-            borderRadius: '10px',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '14px',
-          }}>33-35</span>
-          Savollar (A-F)
-        </h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {Array.from({ length: 3 }, (_, i) => i + 33).map(q => (
-            <div key={q} style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              background: 'rgba(255,255,255,0.08)',
-              borderRadius: '14px',
-              padding: '12px',
-            }}>
-              <span style={{ opacity: 0.6, width: '32px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }}>{q}</span>
-              <div style={{ display: 'flex', gap: '8px', flex: 1, flexWrap: 'wrap' }}>
-                {OPTIONS_6.map(opt => (
-                  <button
-                    key={opt}
-                    onClick={() => setAnswer(String(q), opt)}
-                    style={{
-                      flex: 1,
-                      minWidth: '44px',
-                      padding: '14px 8px',
-                      borderRadius: '12px',
-                      fontWeight: 'bold',
-                      fontSize: '16px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      background: answerKeys[String(q)] === opt
-                        ? 'linear-gradient(135deg, #a855f7, #9333ea)'
-                        : 'rgba(255,255,255,0.1)',
-                      color: answerKeys[String(q)] === opt ? 'white' : 'rgba(255,255,255,0.6)',
-                      transform: answerKeys[String(q)] === opt ? 'scale(1.05)' : 'scale(1)',
-                    }}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 36-45 */}
-      <div style={{
-        background: 'rgba(255,255,255,0.08)',
-        backdropFilter: 'blur(20px)',
-        borderRadius: '20px',
-        padding: '20px',
-        marginBottom: showKeyboard ? '320px' : '20px',
-        border: '1px solid rgba(255,255,255,0.12)',
-      }}>
-        <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{
-            width: '36px', height: '36px',
-            background: 'rgba(249,115,22,0.3)',
-            borderRadius: '10px',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '14px',
-          }}>36-45</span>
-          Savollar (2 ta javob)
-        </h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {Array.from({ length: 10 }, (_, i) => i + 36).map(q => (
-            <div key={q} style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              background: 'rgba(255,255,255,0.08)',
-              borderRadius: '14px',
-              padding: '12px',
-            }}>
-              <span style={{ opacity: 0.6, width: '40px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }}>{q}</span>
-              <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
-                {/* .1 input + keyboard button */}
-                <div style={{ display: 'flex', flex: 1, gap: '4px' }}>
-                  <button
-                    onClick={() => openKeyboard(`${q}.1`)}
-                    style={{
-                      flex: 1,
-                      padding: '14px 10px',
-                      background: activeInput === `${q}.1` ? 'rgba(249,115,22,0.3)' : 'rgba(255,255,255,0.15)',
-                      borderRadius: '12px',
-                      color: 'white',
-                      textAlign: 'left',
-                      fontWeight: 'bold',
-                      fontSize: '16px',
-                      border: activeInput === `${q}.1` ? '2px solid #f97316' : '2px solid transparent',
-                      cursor: 'pointer',
-                      minHeight: '52px',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {answerKeys[`${q}.1`] || <span style={{ opacity: 0.4 }}>.1</span>}
-                  </button>
-                  <button
-                    onClick={() => openKeyboard(`${q}.1`)}
-                    style={{
-                      width: '44px',
-                      background: 'rgba(255,255,255,0.1)',
-                      borderRadius: '12px',
-                      border: 'none',
-                      color: 'rgba(255,255,255,0.6)',
-                      fontSize: '18px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    ⌨
-                  </button>
-                </div>
-                {/* .2 input + keyboard button */}
-                <div style={{ display: 'flex', flex: 1, gap: '4px' }}>
-                  <button
-                    onClick={() => openKeyboard(`${q}.2`)}
-                    style={{
-                      flex: 1,
-                      padding: '14px 10px',
-                      background: activeInput === `${q}.2` ? 'rgba(249,115,22,0.3)' : 'rgba(255,255,255,0.15)',
-                      borderRadius: '12px',
-                      color: 'white',
-                      textAlign: 'left',
-                      fontWeight: 'bold',
-                      fontSize: '16px',
-                      border: activeInput === `${q}.2` ? '2px solid #f97316' : '2px solid transparent',
-                      cursor: 'pointer',
-                      minHeight: '52px',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {answerKeys[`${q}.2`] || <span style={{ opacity: 0.4 }}>.2</span>}
-                  </button>
-                  <button
-                    onClick={() => openKeyboard(`${q}.2`)}
-                    style={{
-                      width: '44px',
-                      background: 'rgba(255,255,255,0.1)',
-                      borderRadius: '12px',
-                      border: 'none',
-                      color: 'rgba(255,255,255,0.6)',
-                      fontSize: '18px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    ⌨
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Math Keyboard */}
-      {showKeyboard && (
-        <MathKeyboard onInput={handleKeyboardInput} onClose={() => { setShowKeyboard(false); setActiveInput(null); }} />
       )}
 
-      <button
-        onClick={handleSubmit}
-        disabled={loading || !allRequiredFilled}
-        style={{
-          width: '100%',
-          padding: '18px',
-          background: 'linear-gradient(135deg, #10b981, #059669)',
-          color: 'white',
-          border: 'none',
-          borderRadius: '16px',
-          fontSize: '18px',
-          fontWeight: 'bold',
-          cursor: 'pointer',
-          opacity: loading || !allRequiredFilled ? 0.5 : 1,
-          boxShadow: '0 8px 24px rgba(16,185,129,0.3)',
-        }}
-      >
-        {loading ? '⏳ Yaratilmoqda...' : '✅ Test Yaratish'}
-      </button>
+      {step === 'create' && (
+        <>
+          {error && (
+            <div style={{
+              background: 'rgba(239,68,68,0.2)',
+              border: '1px solid rgba(239,68,68,0.3)',
+              borderRadius: '16px',
+              padding: '16px',
+              marginBottom: '20px',
+            }}>
+              <p style={{ color: '#fca5a5', fontSize: '14px' }}>{error}</p>
+            </div>
+          )}
+
+          {testType === 'rasch' ? (
+            <>
+              {/* 1-32 */}
+              <div style={{
+                background: 'rgba(255,255,255,0.08)',
+                backdropFilter: 'blur(20px)',
+                borderRadius: '20px',
+                padding: '20px',
+                marginBottom: '20px',
+                border: '1px solid rgba(255,255,255,0.12)',
+              }}>
+                <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{
+                    width: '36px', height: '36px',
+                    background: 'rgba(59,130,246,0.3)',
+                    borderRadius: '10px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '14px',
+                  }}>1-32</span>
+                  Savollar (A/B/C/D)
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {Array.from({ length: 32 }, (_, i) => i + 1).map(q => (
+                    <div key={q} style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      background: 'rgba(255,255,255,0.08)',
+                      borderRadius: '14px',
+                      padding: '12px',
+                    }}>
+                      <span style={{ opacity: 0.6, width: '32px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }}>{q}</span>
+                      <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
+                        {OPTIONS_4.map(opt => (
+                          <button
+                            key={opt}
+                            onClick={() => setAnswer(String(q), opt)}
+                            style={{
+                              flex: 1,
+                              padding: '14px 8px',
+                              borderRadius: '12px',
+                              fontWeight: 'bold',
+                              fontSize: '16px',
+                              border: 'none',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                              background: answerKeys[String(q)] === opt
+                                ? 'linear-gradient(135deg, #3b82f6, #6366f1)'
+                                : 'rgba(255,255,255,0.1)',
+                              color: answerKeys[String(q)] === opt ? 'white' : 'rgba(255,255,255,0.6)',
+                              transform: answerKeys[String(q)] === opt ? 'scale(1.05)' : 'scale(1)',
+                            }}
+                          >
+                            {opt}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 33-35 */}
+              <div style={{
+                background: 'rgba(255,255,255,0.08)',
+                backdropFilter: 'blur(20px)',
+                borderRadius: '20px',
+                padding: '20px',
+                marginBottom: '20px',
+                border: '1px solid rgba(255,255,255,0.12)',
+              }}>
+                <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{
+                    width: '36px', height: '36px',
+                    background: 'rgba(168,85,247,0.3)',
+                    borderRadius: '10px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '14px',
+                  }}>33-35</span>
+                  Savollar (A-F)
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {Array.from({ length: 3 }, (_, i) => i + 33).map(q => (
+                    <div key={q} style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      background: 'rgba(255,255,255,0.08)',
+                      borderRadius: '14px',
+                      padding: '12px',
+                    }}>
+                      <span style={{ opacity: 0.6, width: '32px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }}>{q}</span>
+                      <div style={{ display: 'flex', gap: '8px', flex: 1, flexWrap: 'wrap' }}>
+                        {OPTIONS_6.map(opt => (
+                          <button
+                            key={opt}
+                            onClick={() => setAnswer(String(q), opt)}
+                            style={{
+                              flex: 1,
+                              minWidth: '44px',
+                              padding: '14px 8px',
+                              borderRadius: '12px',
+                              fontWeight: 'bold',
+                              fontSize: '16px',
+                              border: 'none',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                              background: answerKeys[String(q)] === opt
+                                ? 'linear-gradient(135deg, #a855f7, #9333ea)'
+                                : 'rgba(255,255,255,0.1)',
+                              color: answerKeys[String(q)] === opt ? 'white' : 'rgba(255,255,255,0.6)',
+                              transform: answerKeys[String(q)] === opt ? 'scale(1.05)' : 'scale(1)',
+                            }}
+                          >
+                            {opt}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 36-45 */}
+              <div style={{
+                background: 'rgba(255,255,255,0.08)',
+                backdropFilter: 'blur(20px)',
+                borderRadius: '20px',
+                padding: '20px',
+                marginBottom: showKeyboard ? '320px' : '20px',
+                border: '1px solid rgba(255,255,255,0.12)',
+              }}>
+                <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{
+                    width: '36px', height: '36px',
+                    background: 'rgba(249,115,22,0.3)',
+                    borderRadius: '10px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '14px',
+                  }}>36-45</span>
+                  Savollar (2 ta javob)
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {Array.from({ length: 10 }, (_, i) => i + 36).map(q => (
+                    <div key={q} style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      background: 'rgba(255,255,255,0.08)',
+                      borderRadius: '14px',
+                      padding: '12px',
+                    }}>
+                      <span style={{ opacity: 0.6, width: '40px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }}>{q}</span>
+                      <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
+                        {/* .1 input + keyboard button */}
+                        <div style={{ display: 'flex', flex: 1, gap: '4px' }}>
+                          <button
+                            onClick={() => openKeyboard(`${q}.1`)}
+                            style={{
+                              flex: 1,
+                              padding: '14px 10px',
+                              background: activeInput === `${q}.1` ? 'rgba(249,115,22,0.3)' : 'rgba(255,255,255,0.15)',
+                              borderRadius: '12px',
+                              color: 'white',
+                              textAlign: 'left',
+                              fontWeight: 'bold',
+                              fontSize: '16px',
+                              border: activeInput === `${q}.1` ? '2px solid #f97316' : '2px solid transparent',
+                              cursor: 'pointer',
+                              minHeight: '52px',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {answerKeys[`${q}.1`] || <span style={{ opacity: 0.4 }}>.1</span>}
+                          </button>
+                          <button
+                            onClick={() => openKeyboard(`${q}.1`)}
+                            style={{
+                              width: '44px',
+                              background: 'rgba(255,255,255,0.1)',
+                              borderRadius: '12px',
+                              border: 'none',
+                              color: 'rgba(255,255,255,0.6)',
+                              fontSize: '18px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            ⌨
+                          </button>
+                        </div>
+                        {/* .2 input + keyboard button */}
+                        <div style={{ display: 'flex', flex: 1, gap: '4px' }}>
+                          <button
+                            onClick={() => openKeyboard(`${q}.2`)}
+                            style={{
+                              flex: 1,
+                              padding: '14px 10px',
+                              background: activeInput === `${q}.2` ? 'rgba(249,115,22,0.3)' : 'rgba(255,255,255,0.15)',
+                              borderRadius: '12px',
+                              color: 'white',
+                              textAlign: 'left',
+                              fontWeight: 'bold',
+                              fontSize: '16px',
+                              border: activeInput === `${q}.2` ? '2px solid #f97316' : '2px solid transparent',
+                              cursor: 'pointer',
+                              minHeight: '52px',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {answerKeys[`${q}.2`] || <span style={{ opacity: 0.4 }}>.2</span>}
+                          </button>
+                          <button
+                            onClick={() => openKeyboard(`${q}.2`)}
+                            style={{
+                              width: '44px',
+                              background: 'rgba(255,255,255,0.1)',
+                              borderRadius: '12px',
+                              border: 'none',
+                              color: 'rgba(255,255,255,0.6)',
+                              fontSize: '18px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            ⌨
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Math Keyboard */}
+              {showKeyboard && (
+                <MathKeyboard onInput={handleKeyboardInput} onClose={() => { setShowKeyboard(false); setActiveInput(null); }} />
+              )}
+            </>
+          ) : (
+            // Simple test questions
+            <div style={{
+              background: 'rgba(255,255,255,0.08)',
+              backdropFilter: 'blur(20px)',
+              borderRadius: '20px',
+              padding: '20px',
+              marginBottom: '20px',
+              border: '1px solid rgba(255,255,255,0.12)',
+            }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>Savollar (A/B/C/D)</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {Array.from({ length: numQuestions }, (_, i) => i + 1).map(q => (
+                  <div key={q} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    background: 'rgba(255,255,255,0.08)',
+                    borderRadius: '14px',
+                    padding: '12px',
+                  }}>
+                    <span style={{ opacity: 0.6, width: '32px', textAlign: 'center', fontFamily: 'monospace', fontSize: '16px' }}>{q}</span>
+                    <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
+                      {OPTIONS_4.map(opt => (
+                        <button
+                          key={opt}
+                          onClick={() => setAnswer(String(q), opt)}
+                          style={{
+                            flex: 1,
+                            padding: '14px 8px',
+                            borderRadius: '12px',
+                            fontWeight: 'bold',
+                            fontSize: '16px',
+                            border: 'none',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            background: answerKeys[String(q)] === opt
+                              ? 'linear-gradient(135deg, #10b981, #059669)'
+                              : 'rgba(255,255,255,0.1)',
+                            color: answerKeys[String(q)] === opt ? 'white' : 'rgba(255,255,255,0.6)',
+                            transform: answerKeys[String(q)] === opt ? 'scale(1.05)' : 'scale(1)',
+                          }}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <button
+            onClick={handleSubmit}
+            disabled={loading || !allRequiredFilled}
+            style={{
+              width: '100%',
+              padding: '18px',
+              background: 'linear-gradient(135deg, #10b981, #059669)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '16px',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              opacity: loading || !allRequiredFilled ? 0.5 : 1,
+              boxShadow: '0 8px 24px rgba(16,185,129,0.3)',
+            }}
+          >
+            {loading ? '⏳ Yaratilmoqda...' : '✅ Test Yaratish'}
+          </button>
+        </>
+      )}
     </div>
   );
 }
