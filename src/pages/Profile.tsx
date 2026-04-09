@@ -7,6 +7,7 @@ export default function Profile() {
   const [user, setUser] = useState<any>(null);
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -18,7 +19,8 @@ export default function Profile() {
         setUser(userRes.data);
         setResults(resultsRes.data);
       } catch (err) {
-        navigate('/register');
+        console.error('Profile fetch error:', err);
+        setError('Server bilan bog\'lanib bo\'lmadi. Iltimos, keyinroq urinib ko\'ring.');
       } finally {
         setLoading(false);
       }
@@ -44,6 +46,46 @@ export default function Profile() {
             margin: '0 auto 16px',
           }}></div>
           <p style={{ opacity: 0.8 }}>Yuklanmoqda...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '16px',
+      }}>
+        <div style={{
+          background: 'rgba(255,255,255,0.08)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '24px',
+          padding: '32px 20px',
+          textAlign: 'center',
+          border: '1px solid rgba(255,255,255,0.12)',
+          maxWidth: '400px',
+        }}>
+          <span style={{ fontSize: '48px', display: 'block', marginBottom: '12px' }}>⚠️</span>
+          <p style={{ opacity: 0.8, marginBottom: '16px' }}>{error}</p>
+          <button
+            onClick={() => navigate('/')}
+            style={{
+              background: 'rgba(59,130,246,0.2)',
+              color: '#93c5fd',
+              border: 'none',
+              borderRadius: '12px',
+              padding: '12px 20px',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+            }}
+          >
+            Bosh sahifaga qaytish
+          </button>
         </div>
       </div>
     );
