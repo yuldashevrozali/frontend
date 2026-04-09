@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+// ✅ BrowserRouter o'rniga HashRouter import qilamiz
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Register from './pages/Register';
 import Home from './pages/Home';
 import CreateTest from './pages/CreateTest';
@@ -9,6 +10,7 @@ import BottomNav from './components/BottomNav';
 
 function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
+  // HashRouter bilan ham pathname ishlaydi, shuning uchun o'zgartirish shart emas
   const showNav = location.pathname !== '/register';
 
   return (
@@ -31,7 +33,8 @@ export default function App() {
   }, []);
 
   return (
-    <BrowserRouter>
+    // ✅ BrowserRouter o'rniga HashRouter ishlatamiz
+    <HashRouter>
       <Layout>
         <Routes>
           <Route path="/register" element={<Register />} />
@@ -41,6 +44,6 @@ export default function App() {
           <Route path="/profile" element={<Profile />} />
         </Routes>
       </Layout>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
