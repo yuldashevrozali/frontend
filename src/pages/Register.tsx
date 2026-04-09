@@ -58,58 +58,122 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="glass rounded-3xl p-8 w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto mb-4 bg-white/20 rounded-2xl flex items-center justify-center">
-            <span className="text-3xl">📝</span>
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '16px',
+    }}>
+      <div style={{
+        background: 'rgba(255,255,255,0.08)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '24px',
+        padding: '32px',
+        maxWidth: '400px',
+        width: '100%',
+        border: '1px solid rgba(255,255,255,0.12)',
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <div style={{
+            width: '64px', height: '64px',
+            background: 'rgba(255,255,255,0.1)',
+            borderRadius: '16px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 16px',
+            fontSize: '32px',
+          }}>
+            📝
           </div>
-          <h2 className="text-2xl font-bold text-white">Ro'yxatdan o'tish</h2>
-          <p className="text-white/60 mt-1">Ma'lumotlaringizni kiriting</p>
+          <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Ro'yxatdan o'tish</h2>
+          <p style={{ color: 'rgba(255,255,255,0.6)' }}>Ma'lumotlaringizni kiriting</p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <input
-              {...register("name", { required: true })}
-              placeholder="Ism"
-              className="input-modern w-full p-4 rounded-xl text-gray-800 placeholder-gray-400"
-            />
-          </div>
-          <div>
-            <input
-              {...register("surname", { required: true })}
-              placeholder="Familiya"
-              className="input-modern w-full p-4 rounded-xl text-gray-800 placeholder-gray-400"
-            />
-          </div>
+        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <input
+            {...register("name", { required: true })}
+            placeholder="Ism"
+            style={{
+              width: '100%',
+              padding: '16px',
+              borderRadius: '12px',
+              background: 'rgba(255,255,255,0.1)',
+              border: '2px solid rgba(255,255,255,0.15)',
+              color: 'white',
+              fontSize: '16px',
+            }}
+          />
+          <input
+            {...register("surname", { required: true })}
+            placeholder="Familiya"
+            style={{
+              width: '100%',
+              padding: '16px',
+              borderRadius: '12px',
+              background: 'rgba(255,255,255,0.1)',
+              border: '2px solid rgba(255,255,255,0.15)',
+              color: 'white',
+              fontSize: '16px',
+            }}
+          />
           <div>
             <input
               {...register("phone", { required: true, pattern: /^\+998\d{9}$/ })}
               placeholder="+998901234567"
-              className="input-modern w-full p-4 rounded-xl text-gray-800 placeholder-gray-400"
+              style={{
+                width: '100%',
+                padding: '16px',
+                borderRadius: '12px',
+                background: 'rgba(255,255,255,0.1)',
+                border: '2px solid rgba(255,255,255,0.15)',
+                color: 'white',
+                fontSize: '16px',
+              }}
             />
             {errors.phone && (
-              <p className="text-red-300 text-sm mt-1">Telefon +998 bilan boshlanishi va 9 raqam bo'lishi kerak</p>
+              <p style={{ color: '#fca5a5', fontSize: '14px', marginTop: '4px' }}>Telefon +998 bilan boshlanishi va 9 raqam bo'lishi kerak</p>
             )}
           </div>
-          <div>
-            <input
-              {...register("region", { required: true })}
-              placeholder="Viloyat"
-              className="input-modern w-full p-4 rounded-xl text-gray-800 placeholder-gray-400"
-            />
-          </div>
-          <div>
-            <input
-              {...register("district", { required: true })}
-              placeholder="Tuman"
-              className="input-modern w-full p-4 rounded-xl text-gray-800 placeholder-gray-400"
-            />
-          </div>
+          <input
+            {...register("region", { required: true })}
+            placeholder="Viloyat"
+            style={{
+              width: '100%',
+              padding: '16px',
+              borderRadius: '12px',
+              background: 'rgba(255,255,255,0.1)',
+              border: '2px solid rgba(255,255,255,0.15)',
+              color: 'white',
+              fontSize: '16px',
+            }}
+          />
+          <input
+            {...register("district", { required: true })}
+            placeholder="Tuman"
+            style={{
+              width: '100%',
+              padding: '16px',
+              borderRadius: '12px',
+              background: 'rgba(255,255,255,0.1)',
+              border: '2px solid rgba(255,255,255,0.15)',
+              color: 'white',
+              fontSize: '16px',
+            }}
+          />
           <button
             type="submit"
-            className="w-full bg-white text-purple-600 p-4 rounded-xl font-bold text-lg btn-hover"
+            style={{
+              width: '100%',
+              background: 'white',
+              color: '#9333ea',
+              padding: '16px',
+              borderRadius: '12px',
+              border: 'none',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'transform 0.2s',
+            }}
           >
             ✅ Yuborish
           </button>
