@@ -5,9 +5,9 @@ export default function BottomNav() {
   const location = useLocation();
 
   const items = [
-    { icon: '📋', label: 'Test Ishlash', path: '/take-test' },
     { icon: '📝', label: 'Test Yaratish', path: '/create-test' },
-    { icon: '👤', label: 'Profil', path: '/profile' },
+    { icon: '📋', label: 'Test Ishlash', path: '/take-test' },
+    { icon: '📊', label: 'Natijalarim', path: '/profile' },
   ];
 
   return (
